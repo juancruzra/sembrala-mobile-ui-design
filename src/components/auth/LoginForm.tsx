@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,8 +25,8 @@ const LoginForm = ({ onLogin, onSwitchToSignup }: LoginFormProps) => {
     <div className="mobile-container flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
-            <img src="logo.png" alt="Logo Sembrala" className="w-full h-full" />
-          </div>
+          {/* Centrar el logo y ajustar su tamaño */}
+          <img src="logo.png" alt="Logo Sembrala" className="mx-auto h-20 w-auto" />
           <CardTitle className="text-2xl font-bold text-sembrala-blue">
             Bienvenido a Sembrala
           </CardTitle>
