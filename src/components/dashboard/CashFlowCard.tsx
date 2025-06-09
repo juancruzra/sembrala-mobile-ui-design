@@ -2,25 +2,27 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from 'recharts';
+import { useTotals } from '@/hooks/useTotals';
 
 const CashFlowCard = () => {
-  const cashFlowData = [
-    { month: 'Jul', balance: -800000 },
-    { month: 'Ago', balance: 1200000 },
-    { month: 'Sep', balance: -300000 },
-    { month: 'Oct', balance: 2100000 },
-    { month: 'Nov', balance: -150000 },
-    { month: 'Dic', balance: 1800000 },
-  ];
+  const { 
+    totalTenencias, 
+    upcomingPayments, 
+    futureSaldo, 
+    projectedFutureSaldo, 
+    loading, 
+    formatCurrency 
+  } = useTotals();
 
-  const formatCurrency = (amount: number) => {
-    const absAmount = Math.abs(amount);
-    if (absAmount >= 1000000) {
-      return `${(amount / 1000000).toFixed(1)}M`;
-    }
-    return `${(amount / 1000).toFixed(0)}K`;
-  };
+  if (loading) {
+    return (
+      <Card className="mx-4 mb-6">
+        <CardContent className="p-6">
+          <div className="text-center">Cargando flujo de caja...</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="mx-4 mb-6">
@@ -29,34 +31,51 @@ const CashFlowCard = () => {
           Tu Flujo de Caja
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={cashFlowData}>
-              <XAxis 
-                dataKey="month" 
-                axisLine={false}
-                tickLine={false}
-                fontSize={12}
-                className="text-gray-600"
-              />
-              <YAxis 
-                tickFormatter={formatCurrency}
-                axisLine={false}
-                tickLine={false}
-                fontSize={12}
-                className="text-gray-600"
-              />
-              <Bar dataKey="balance" radius={[4, 4, 0, 0]}>
-                {cashFlowData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={entry.balance >= 0 ? '#76CD7C' : '#E74C3C'}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+      <CardContent className="space-y-6">
+        {/* Resumen de cálculo */}
+        <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-gray-600">Tenencias Totales:</span>
+            <span className="font-semibold text-sembrala-green">
+              {formatCurrency(totalTenencias)}
+            </span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-gray-600">Próximos Vencimientos:</span>
+            <span className="font-semibold text-red-600">
+              -{formatCurrency(upcomingPayments)}
+            </span>
+          </div>
+          <div className="border-t border-gray-200 pt-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-700">Resultado:</span>
+              <span className={`font-bold ${futureSaldo >= 0 ? 'text-sembrala-green' : 'text-red-600'}`}>
+                {formatCurrency(futureSaldo)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Saldo Futuro */}
+        <div className="bg-sembrala-green/10 p-6 rounded-lg text-center">
+          <p className="text-sm text-gray-700 mb-2">Saldo Futuro</p>
+          <p className={`text-3xl font-bold ${futureSaldo >= 0 ? 'text-sembrala-green' : 'text-red-600'}`}>
+            {formatCurrency(futureSaldo)}
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            (Tenencias actuales - Vencimientos pendientes)
+          </p>
+        </div>
+
+        {/* Saldo Futuro Proyectado */}
+        <div className="bg-blue-50 p-6 rounded-lg text-center">
+          <p className="text-sm text-gray-700 mb-2">Saldo Futuro Proyectado</p>
+          <p className={`text-3xl font-bold ${projectedFutureSaldo >= 0 ? 'text-sembrala-blue' : 'text-red-600'}`}>
+            {formatCurrency(projectedFutureSaldo)}
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            (Incluye tenencias proyectadas)
+          </p>
         </div>
         
         <div className="pt-2">
