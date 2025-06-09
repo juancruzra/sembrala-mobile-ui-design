@@ -38,14 +38,14 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
     <div className="mobile-container flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-20 h-20 bg-sembrala-green rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-2xl">S</span>
+          {/* Centrar el logo y ajustar su tamaño */}
+          <img src="logo.png" alt="Logo Sembrala" className="mx-auto h-20 w-auto" />
           </div>
           <CardTitle className="text-2xl font-bold text-sembrala-blue">
             Crear Cuenta
           </CardTitle>
           <p className="text-muted-foreground">
-            Únete a la revolución AgriFintech
+            Una mejor forma de tomar el control de tus finanzas llegó
           </p>
         </CardHeader>
         <CardContent>
