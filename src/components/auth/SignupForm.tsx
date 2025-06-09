@@ -106,7 +106,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
               className="text-sembrala-green hover:underline"
               disabled={isLoading}
             >
-              ¿Ya tienes cuenta? Inicia sesión
+              ¿Ya tenes cuenta? Inicia sesión
             </button>
           </div>
         </CardContent>
