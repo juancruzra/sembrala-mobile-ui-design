@@ -45,7 +45,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
             Crear Cuenta
           </CardTitle>
           <p className="text-muted-foreground">
-            Una mejor forma de tomar el control de tus finanzas llegó
+            Toma el control de tus finanzas
           </p>
         </CardHeader>
         <CardContent>
