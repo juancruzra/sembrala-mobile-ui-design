@@ -1,13 +1,6 @@
 
 import React from 'react';
 import { Bell, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-
-const Header = () => {
-  const navigate = useNavigate();
-
-  const goToProfile = () => {
-    navigate("/profile");
   };
   return (
     <header className="flex items-center justify-between p-4 bg-white border-b border-gray-100">
