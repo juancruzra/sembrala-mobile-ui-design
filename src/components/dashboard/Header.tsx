@@ -3,6 +3,11 @@ import React from 'react';
 import { Bell, User } from 'lucide-react';
 
 const Header = () => {
+  const navigate = useNavigate();
+
+  const goToProfile = () => {
+    navigate("/profile");
+  };
   return (
     <header className="flex items-center justify-between p-4 bg-white border-b border-gray-100">
       <div className="flex items-center">
