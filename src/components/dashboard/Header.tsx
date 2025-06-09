@@ -6,8 +6,7 @@ const Header = () => {
   return (
     <header className="flex items-center justify-between p-4 bg-white border-b border-gray-100">
       <div className="flex items-center">
-        <div className="w-8 h-8 bg-sembrala-green rounded-full flex items-center justify-center mr-2">
-          <span className="text-white font-bold text-sm">S</span>
+        <img src="logo.png" alt="Logo Sembrala" className="mx-auto h-20 w-auto" />
         </div>
         <h1 className="text-xl font-bold text-sembrala-blue">Sembrala</h1>
       </div>
