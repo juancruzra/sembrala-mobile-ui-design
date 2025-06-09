@@ -29,7 +29,7 @@ const Dashboard = () => {
             <WalletCard />
             <InventoryCard />
             <UpcomingPaymentsCard key={refreshKey} />
-            <CashFlowCard />
+            <CashFlowCard key={refreshKey}/>
           </div>
         );
       case 'expenses':
