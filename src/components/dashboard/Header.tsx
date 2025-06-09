@@ -8,8 +8,6 @@ const Header = () => {
       <div className="flex items-center">
         <img src="logo.png" alt="Logo Sembrala" className="mx-auto h-20 w-auto" />
         </div>
-        <h1 className="text-xl font-bold text-sembrala-blue">Sembrala</h1>
-      </div>
       <div className="flex items-center space-x-3">
         <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
           <Bell className="w-6 h-6 text-sembrala-blue" />
