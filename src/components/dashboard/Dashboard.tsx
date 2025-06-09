@@ -39,11 +39,19 @@ const Dashboard = () => {
             <p className="text-gray-600">Sección de gastos en desarrollo...</p>
           </div>
         );
-      case 'credits':
+     case 'credits':
+  const whatsappNumber = '5493794937462'; // Reemplaza esto con el número de teléfono de tu asesor
+  const whatsappLink = `https://wa.me/${whatsappNumber}?text=Hola%2C%20me%20gustar%C3%ADa%20asesorarme%20sobre%20cr%C3%A9ditos.`;
         return (
           <div className="pb-20 p-4 text-center">
             <h2 className="text-xl font-bold text-sembrala-blue mb-4">Créditos</h2>
-            <p className="text-gray-600">Gestión y Calificación de Créditos en desarrollo...</p>
+            <p className="text-gray-600">Gestión y Calificación de Créditos</p>
+            <p className="text-gray-600">Te asesor designado:</p>
+            <p className="text-gray-600">
+        <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+          Whatsapp de tu asesor Juan Cruz
+        </a>
+            <p className="text-gray-600">Horario de Atención 9:00 hs a 13:00 hs</p>
           </div>
         );
       case 'profile':
