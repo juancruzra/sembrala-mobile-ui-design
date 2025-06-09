@@ -33,7 +33,7 @@ const LoginForm = ({ onLogin, onSwitchToSignup }: LoginFormProps) => {
             Bienvenido a Sembrala
           </CardTitle>
           <p className="text-muted-foreground">
-            Tu billetera digital agropecuaria
+            Cuidamos las finanzas de quienes trabajan la tierra.
           </p>
         </CardHeader>
         <CardContent>
