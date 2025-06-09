@@ -12,7 +12,8 @@ const Header = () => {
         <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
           <Bell className="w-6 h-6 text-sembrala-blue" />
         </button>
-        <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+        <button className="p-2 hover:bg-gray-100 rounded-full transition-colors
+  onClick={goToProfile}">
           <User className="w-6 h-6 text-sembrala-blue" />
         </button>
       </div>
