@@ -100,7 +100,7 @@ const ProfileSection = () => {
 
       <div className="text-center text-sm text-gray-500 mt-8">
         <p>Sembrala v1.0</p>
-        <p>Cuidamos las finanzas de quienes trabajan la tierra</p>
+        <p>Tu billetera digital agropecuaria</p>
       </div>
     </div>
   );
