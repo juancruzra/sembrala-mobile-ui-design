@@ -47,8 +47,7 @@ const Dashboard = () => {
     <div className="pb-20 p-4 text-center">
       <h2 className="text-xl font-bold text-sembrala-blue mb-4">Créditos</h2>
       <p className="text-gray-600">Gestión y Calificación de Créditos</p>
-      <p className="text-gray-600">Tu asesor designado:</p>
-      
+      <p className="text-gray-600 mb-4">Tu asesor designado:</p>
       <p className="text-xl font-bold text-sembrala-blue mb-4">
         <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
           Whatsapp de tu asesor
