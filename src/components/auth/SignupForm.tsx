@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface SignupFormProps {
-  onSignup: (phone: string, password: string) => void;
+  onSignup: (email: string, password: string) => void;
   onSwitchToLogin: () => void;
 }
 
@@ -38,8 +37,9 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
     <div className="mobile-container flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
-          {/* Centrar el logo y ajustar su tamaño */}
-          <img src="logo.png" alt="Logo Sembrala" className="mx-auto h-20 w-auto" />
+          {/* Corregir la etiqueta </div> */}
+          <div className="mx-auto">
+            <img src="logo.png" alt="Logo Sembrala" className="h-20 w-auto" />
           </div>
           <CardTitle className="text-2xl font-bold text-sembrala-blue">
             Crear Cuenta
@@ -99,7 +99,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
               {isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
             </Button>
           </form>
-          <div className="mt-6 text-center">
+          <div class="mt-6 text-center">
             <button
               type="button"
               onClick={onSwitchToLogin}
