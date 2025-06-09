@@ -32,12 +32,14 @@ const ExpenseForm = ({ onClose, onSave }: ExpenseFormProps) => {
     'Combustible',
     'Labores',
     'Servicios',
+    'Alquileres',
     'Honorarios Profesionales',
     'Sueldos',
     'Gastos Personales',
     'Maquinaria',
     'Crédito',
     'Tarjeta',
+    'Otros',
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
