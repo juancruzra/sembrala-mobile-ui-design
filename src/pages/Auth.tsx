@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import LoginForm from '@/components/auth/LoginForm';
 import SignupForm from '@/components/auth/SignupForm';
@@ -13,10 +12,10 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
   const [isLogin, setIsLogin] = useState(true);
   const { toast } = useToast();
 
-  const handleLogin = async (username: string, password: string) => {
+  const handleLogin = async (email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: username,
+        email: email,
         password: password,
       });
 
@@ -45,17 +44,16 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
     }
   };
 
-  const handleSignup = async (phone: string, password: string) => {
+  const handleSignup = async (email: string, password: string) => {
     try {
-      // Convertir el teléfono a email format para Supabase
-      const email = `${phone.replace(/\s/g, '').replace('+', '')}@sembrala.app`;
-      
       const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
         options: {
           data: {
-            phone: phone,
+            // Aquí puedes agregar cualquier dato adicional que necesites
+            // Por ejemplo, si deseas guardar el email en un campo personalizado:
+            // email: email,
           }
         }
       });
