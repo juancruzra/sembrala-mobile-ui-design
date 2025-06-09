@@ -9,8 +9,8 @@ interface BottomNavigationProps {
 const BottomNavigation = ({ activeTab, onTabChange }: BottomNavigationProps) => {
   const tabs = [
     { id: 'dashboard', label: 'Inicio', icon: '🏡' },
-    { id: 'expenses', label: 'Gastos', icon: '💰🚜' },
-    { id: 'credits', label: 'Créditos', icon: '🫛🌽' },
+    { id: 'expenses', label: 'Gastos', icon: '🚜' },
+    { id: 'credits', label: 'Créditos', icon: '💰' },
     { id: 'profile', label: 'Perfil', icon: '👨🏻‍🌾👩🏻‍🌾' },
   ];
 
