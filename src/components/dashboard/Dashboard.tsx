@@ -8,7 +8,6 @@ import CashFlowCard from './CashFlowCard';
 import BottomNavigation from './BottomNavigation';
 import FloatingActionButton from './FloatingActionButton';
 import ExpenseForm from '../forms/ExpenseForm';
-import ProfileSection from './ProfileSection';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
