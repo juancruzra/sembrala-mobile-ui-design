@@ -27,7 +27,7 @@ const LoginForm = ({ onLogin, onSwitchToSignup }: LoginFormProps) => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
           <div className="mx-auto w-20 h-20 bg-sembrala-green rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-2xl">S</span>
+            <img src="logo.png" alt="Logo Sembrala" className="w-full h-full" />
           </div>
           <CardTitle className="text-2xl font-bold text-sembrala-blue">
             Bienvenido a Sembrala
