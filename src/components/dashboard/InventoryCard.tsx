@@ -1,13 +1,16 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const InventoryCard = () => {
   const [soyaTons, setSoyaTons] = useState(0);
   const [cornTons, setCornTons] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
   
   const soyaPrice = 323500; // Price per ton in ARS
   const cornPrice = 296500; // Price per ton in ARS
@@ -24,6 +27,101 @@ const InventoryCard = () => {
       maximumFractionDigits: 0,
     }).format(amount);
   };
+
+  // Cargar tenencias del usuario desde Supabase
+  useEffect(() => {
+    loadTenencias();
+  }, []);
+
+  const loadTenencias = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('tenencias')
+        .select('producto_nombre, cantidad')
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error loading tenencias:', error);
+        toast({
+          title: "Error",
+          description: "No se pudieron cargar las tenencias",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Inicializar las cantidades
+      let soja = 0;
+      let maiz = 0;
+
+      data?.forEach((tenencia) => {
+        if (tenencia.producto_nombre === 'soja') {
+          soja = Number(tenencia.cantidad);
+        } else if (tenencia.producto_nombre === 'maiz') {
+          maiz = Number(tenencia.cantidad);
+        }
+      });
+
+      setSoyaTons(soja);
+      setCornTons(maiz);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para actualizar tenencias en Supabase (UPSERT)
+  const updateTenencia = async (producto: string, cantidad: number) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('tenencias')
+        .upsert({
+          user_id: user.id,
+          producto_nombre: producto,
+          cantidad: cantidad,
+        }, {
+          onConflict: 'user_id,producto_nombre'
+        });
+
+      if (error) {
+        console.error('Error updating tenencia:', error);
+        toast({
+          title: "Error",
+          description: "No se pudo actualizar la tenencia",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleSoyaChange = (value: number) => {
+    setSoyaTons(value);
+    updateTenencia('soja', value);
+  };
+
+  const handleCornChange = (value: number) => {
+    setCornTons(value);
+    updateTenencia('maiz', value);
+  };
+
+  if (loading) {
+    return (
+      <Card className="mx-4 mb-6 border-2 border-sembrala-green/20 bg-gradient-to-br from-green-50 to-white">
+        <CardContent className="p-6">
+          <div className="text-center">Cargando inventario...</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="mx-4 mb-6 border-2 border-sembrala-green/20 bg-gradient-to-br from-green-50 to-white">
@@ -44,7 +142,7 @@ const InventoryCard = () => {
                 type="number"
                 placeholder="0"
                 value={soyaTons || ''}
-                onChange={(e) => setSoyaTons(Number(e.target.value) || 0)}
+                onChange={(e) => handleSoyaChange(Number(e.target.value) || 0)}
                 className="h-10"
                 min="0"
                 step="0.1"
@@ -76,7 +174,7 @@ const InventoryCard = () => {
                 type="number"
                 placeholder="0"
                 value={cornTons || ''}
-                onChange={(e) => setCornTons(Number(e.target.value) || 0)}
+                onChange={(e) => handleCornChange(Number(e.target.value) || 0)}
                 className="h-10"
                 min="0"
                 step="0.1"

@@ -12,10 +12,12 @@ import ExpenseForm from '../forms/ExpenseForm';
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleSaveExpense = (expense: any) => {
     console.log('Saved expense:', expense);
-    // Here you would typically save to a backend or state management
+    // Trigger a refresh of the upcoming payments component
+    setRefreshKey(prev => prev + 1);
   };
 
   const renderContent = () => {
@@ -25,7 +27,7 @@ const Dashboard = () => {
           <div className="pb-20">
             <WalletCard />
             <InventoryCard />
-            <UpcomingPaymentsCard />
+            <UpcomingPaymentsCard key={refreshKey} />
             <CashFlowCard />
           </div>
         );

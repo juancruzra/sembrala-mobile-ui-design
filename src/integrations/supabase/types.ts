@@ -9,7 +9,63 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      tenencias: {
+        Row: {
+          cantidad: number
+          id: string
+          producto_nombre: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cantidad?: number
+          id?: string
+          producto_nombre: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cantidad?: number
+          id?: string
+          producto_nombre?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vencimientos: {
+        Row: {
+          categoria: string
+          concepto: string
+          created_at: string
+          estado: string
+          fecha_vencimiento: string
+          id: string
+          monto: number
+          user_id: string
+        }
+        Insert: {
+          categoria: string
+          concepto: string
+          created_at?: string
+          estado?: string
+          fecha_vencimiento: string
+          id?: string
+          monto: number
+          user_id: string
+        }
+        Update: {
+          categoria?: string
+          concepto?: string
+          created_at?: string
+          estado?: string
+          fecha_vencimiento?: string
+          id?: string
+          monto?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

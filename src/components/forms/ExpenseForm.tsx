@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface ExpenseFormProps {
   onClose: () => void;
@@ -22,6 +24,8 @@ const ExpenseForm = ({ onClose, onSave }: ExpenseFormProps) => {
   const [amount, setAmount] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [category, setCategory] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   const categories = [
     'Insumos',
@@ -36,26 +40,79 @@ const ExpenseForm = ({ onClose, onSave }: ExpenseFormProps) => {
     'Tarjeta',
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!concept || !amount || !dueDate || !category) {
-      alert('Por favor completa todos los campos');
+      toast({
+        title: "Error",
+        description: "Por favor completa todos los campos",
+        variant: "destructive",
+      });
       return;
     }
 
-    onSave({
-      concept,
-      amount: parseFloat(amount),
-      dueDate,
-      category,
-    });
+    setLoading(true);
 
-    // Reset form
-    setConcept('');
-    setAmount('');
-    setDueDate('');
-    setCategory('');
-    onClose();
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "Debes estar autenticado para guardar vencimientos",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from('vencimientos')
+        .insert({
+          user_id: user.id,
+          concepto: concept,
+          monto: parseFloat(amount),
+          fecha_vencimiento: dueDate,
+          categoria: category,
+        });
+
+      if (error) {
+        console.error('Error saving vencimiento:', error);
+        toast({
+          title: "Error",
+          description: "No se pudo guardar el vencimiento",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Éxito",
+        description: "Vencimiento guardado correctamente",
+      });
+
+      // Call the original onSave callback for any additional functionality
+      onSave({
+        concept,
+        amount: parseFloat(amount),
+        dueDate,
+        category,
+      });
+
+      // Reset form
+      setConcept('');
+      setAmount('');
+      setDueDate('');
+      setCategory('');
+      onClose();
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Ocurrió un error inesperado",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -71,6 +128,7 @@ const ExpenseForm = ({ onClose, onSave }: ExpenseFormProps) => {
               size="icon"
               onClick={onClose}
               className="hover:bg-gray-100"
+              disabled={loading}
             >
               <X className="w-6 h-6" />
             </Button>
@@ -89,6 +147,7 @@ const ExpenseForm = ({ onClose, onSave }: ExpenseFormProps) => {
                   onChange={(e) => setConcept(e.target.value)}
                   className="h-12 text-base"
                   required
+                  disabled={loading}
                 />
               </div>
 
@@ -107,6 +166,7 @@ const ExpenseForm = ({ onClose, onSave }: ExpenseFormProps) => {
                   min="0"
                   step="0.01"
                   required
+                  disabled={loading}
                 />
               </div>
 
@@ -121,12 +181,13 @@ const ExpenseForm = ({ onClose, onSave }: ExpenseFormProps) => {
                   onChange={(e) => setDueDate(e.target.value)}
                   className="h-12 text-base"
                   required
+                  disabled={loading}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label className="text-base font-medium">Categoría</Label>
-                <Select value={category} onValueChange={setCategory} required>
+                <Select value={category} onValueChange={setCategory} required disabled={loading}>
                   <SelectTrigger className="h-12 text-base">
                     <SelectValue placeholder="Selecciona una categoría" />
                   </SelectTrigger>
@@ -149,8 +210,9 @@ const ExpenseForm = ({ onClose, onSave }: ExpenseFormProps) => {
             <Button
               onClick={handleSubmit}
               className="w-full h-12 bg-sembrala-green hover:bg-sembrala-green/90 text-base font-semibold"
+              disabled={loading}
             >
-              Guardar Vencimiento
+              {loading ? "Guardando..." : "Guardar Vencimiento"}
             </Button>
           </div>
         </div>
