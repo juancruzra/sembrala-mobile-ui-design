@@ -14,10 +14,10 @@ const InventoryCard = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-  const soyaPrice = 323500; // Price per ton in ARS
-  const cornPrice = 296500; // Price per ton in ARS
-  const wheatPrice = 285000; // Price per ton in ARS
-  const sunflowerPrice = 415000; // Price per ton in ARS
+  const soyaPrice = 321300; // Price per ton in ARS
+  const cornPrice = 203700; // Price per ton in ARS
+  const wheatPrice = 235500; // Price per ton in ARS
+  const sunflowerPrice = 411775; // Price per ton in ARS
   
   const soyaTotal = soyaTons * soyaPrice;
   const cornTotal = cornTons * cornPrice;
@@ -144,7 +144,7 @@ const InventoryCard = () => {
     return (
       <Card className="mx-4 mb-6 border-2 border-sembrala-green/20 bg-gradient-to-br from-green-50 to-white">
         <CardContent className="p-6">
-          <div className="text-center">Cargando inventario...</div>
+          <div className="text-center">Cargando tenencias...</div>
         </CardContent>
       </Card>
     );
@@ -154,7 +154,7 @@ const InventoryCard = () => {
     <Card className="mx-4 mb-6 border-2 border-sembrala-green/20 bg-gradient-to-br from-green-50 to-white">
       <CardHeader>
         <CardTitle className="text-lg text-sembrala-blue">
-          Valor de tu Inventario
+          Tenencias Valorizadas
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
