@@ -79,7 +79,7 @@ const LoginForm = ({ onLogin, onSwitchToSignup }: LoginFormProps) => {
               className="text-sembrala-green hover:underline"
               disabled={isLoading}
             >
-              ¿No tienes cuenta? Regístrate aquí
+              ¿No tenes cuenta? Registrate aquí
             </button>
           </div>
         </CardContent>
