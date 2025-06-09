@@ -8,6 +8,7 @@ import CashFlowCard from './CashFlowCard';
 import BottomNavigation from './BottomNavigation';
 import FloatingActionButton from './FloatingActionButton';
 import ExpenseForm from '../forms/ExpenseForm';
+import ProfileSection from './ProfileSection';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -46,12 +47,7 @@ const Dashboard = () => {
           </div>
         );
       case 'profile':
-        return (
-          <div className="pb-20 p-4 text-center">
-            <h2 className="text-xl font-bold text-sembrala-blue mb-4">Perfil</h2>
-            <p className="text-gray-600">Configuración de perfil en desarrollo...</p>
-          </div>
-        );
+        return <ProfileSection />;
       default:
         return null;
     }

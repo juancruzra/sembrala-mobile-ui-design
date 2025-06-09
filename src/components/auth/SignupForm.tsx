@@ -11,44 +11,27 @@ interface SignupFormProps {
 }
 
 const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
-  const [phone, setPhone] = useState('+549 ');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
-    
-    // Ensure it always starts with +549
-    if (!value.startsWith('+549 ')) {
-      value = '+549 ';
-    }
-    
-    // Remove any non-digits after +549
-    const phoneDigits = value.slice(5).replace(/\D/g, '');
-    
-    // Format the phone number
-    if (phoneDigits.length <= 4) {
-      value = '+549 ' + phoneDigits;
-    } else if (phoneDigits.length <= 8) {
-      value = '+549 ' + phoneDigits.slice(0, 4) + ' ' + phoneDigits.slice(4);
-    } else {
-      value = '+549 ' + phoneDigits.slice(0, 4) + ' ' + phoneDigits.slice(4, 8);
-    }
-    
-    setPhone(value);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (password !== confirmPassword) {
       alert('Las contraseñas no coinciden');
       return;
     }
-    if (phone.length < 14) {
-      alert('Por favor ingresa un número de teléfono válido');
+    
+    if (password.length < 6) {
+      alert('La contraseña debe tener al menos 6 caracteres');
       return;
     }
-    onSignup(phone, password);
+
+    setIsLoading(true);
+    await onSignup(email, password);
+    setIsLoading(false);
   };
 
   return (
@@ -68,19 +51,17 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="phone">Teléfono</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="phone"
-                type="tel"
-                placeholder="+549 xxxx xxxx"
-                value={phone}
-                onChange={handlePhoneChange}
+                id="email"
+                type="email"
+                placeholder="ejemplo@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="h-12 text-base"
                 required
+                disabled={isLoading}
               />
-              <p className="text-sm text-muted-foreground">
-                Formato: +549 seguido de tu número
-              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Contraseña</Label>
@@ -93,6 +74,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
                 className="h-12 text-base"
                 required
                 minLength={6}
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -106,10 +88,15 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
                 className="h-12 text-base"
                 required
                 minLength={6}
+                disabled={isLoading}
               />
             </div>
-            <Button type="submit" className="w-full h-12 bg-sembrala-green hover:bg-sembrala-green/90 text-base font-semibold">
-              Crear Cuenta
+            <Button 
+              type="submit" 
+              className="w-full h-12 bg-sembrala-green hover:bg-sembrala-green/90 text-base font-semibold"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
             </Button>
           </form>
           <div className="mt-6 text-center">
@@ -117,6 +104,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
               type="button"
               onClick={onSwitchToLogin}
               className="text-sembrala-green hover:underline"
+              disabled={isLoading}
             >
               ¿Ya tienes cuenta? Inicia sesión
             </button>

@@ -2,29 +2,44 @@
 import React, { useState, useEffect } from 'react';
 import Auth from './Auth';
 import Dashboard from '@/components/dashboard/Dashboard';
+import { supabase } from '@/integrations/supabase/client';
+import type { User } from '@supabase/supabase-js';
 
 const Index = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Check if user is already authenticated (you might check localStorage, cookies, etc.)
   useEffect(() => {
-    const authStatus = localStorage.getItem('sembrala_authenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
+    // Obtener usuario actual
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    // Escuchar cambios de autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleAuthentication = () => {
-    setIsAuthenticated(true);
-    localStorage.setItem('sembrala_authenticated', 'true');
+    // No necesario hacer nada aquí, onAuthStateChange manejará el estado
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('sembrala_authenticated');
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-sembrala-light-gray flex items-center justify-center">
+        <div className="text-sembrala-blue">Cargando...</div>
+      </div>
+    );
+  }
 
-  if (!isAuthenticated) {
+  if (!user) {
     return <Auth onAuthenticated={handleAuthentication} />;
   }
 

@@ -11,12 +11,15 @@ interface LoginFormProps {
 }
 
 const LoginForm = ({ onLogin, onSwitchToSignup }: LoginFormProps) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(username, password);
+    setIsLoading(true);
+    await onLogin(email, password);
+    setIsLoading(false);
   };
 
   return (
@@ -36,15 +39,16 @@ const LoginForm = ({ onLogin, onSwitchToSignup }: LoginFormProps) => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Usuario</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="username"
-                type="text"
-                placeholder="Ingresa tu usuario"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                id="email"
+                type="email"
+                placeholder="Ingresa tu email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="h-12 text-base"
                 required
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -57,10 +61,15 @@ const LoginForm = ({ onLogin, onSwitchToSignup }: LoginFormProps) => {
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-12 text-base"
                 required
+                disabled={isLoading}
               />
             </div>
-            <Button type="submit" className="w-full h-12 bg-sembrala-green hover:bg-sembrala-green/90 text-base font-semibold">
-              Iniciar Sesión
+            <Button 
+              type="submit" 
+              className="w-full h-12 bg-sembrala-green hover:bg-sembrala-green/90 text-base font-semibold"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </Button>
           </form>
           <div className="mt-6 text-center">
@@ -68,6 +77,7 @@ const LoginForm = ({ onLogin, onSwitchToSignup }: LoginFormProps) => {
               type="button"
               onClick={onSwitchToSignup}
               className="text-sembrala-green hover:underline"
+              disabled={isLoading}
             >
               ¿No tienes cuenta? Regístrate aquí
             </button>
