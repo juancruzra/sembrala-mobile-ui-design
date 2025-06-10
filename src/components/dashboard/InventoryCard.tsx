@@ -261,7 +261,7 @@ const InventoryCard = () => {
                 />
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-600">Precio/tn</p>
+                <p className="text-sm text-gray-600">Precio/tn -A cosecha aprox-</p>
                 <p className="text-lg font-bold text-sembrala-green">
                   {formatCurrency(wheatPrice)}/tn
                 </p>
@@ -293,7 +293,7 @@ const InventoryCard = () => {
                 />
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-600">Precio/tn</p>
+                <p className="text-sm text-gray-600">Precio/tn -A cosecha aprox-</p>
                 <p className="text-lg font-bold text-sembrala-green">
                   {formatCurrency(sunflowerPrice)}/tn
                 </p>
