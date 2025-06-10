@@ -76,8 +76,8 @@ export const useTotals = () => {
         return sum + Number(vencimiento.monto);
       }, 0) || 0;
 
-      const futureSaldo = currentTenencia + upcomingPayments;
-      const projectedFutureSaldo = currentTotal + upcomingPayments;
+      const futureSaldo = currentTenencia - upcomingPayments;
+      const projectedFutureSaldo = currentTotal - upcomingPayments;
 
       setTotals({
         currentTenencias: currentTenencia,
