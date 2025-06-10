@@ -93,7 +93,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="inviteCode">Código de Invitación (opcional)</Label>
+              <Label htmlFor="inviteCode">Código de Invitación</Label>
               <Input
                 id="inviteCode"
                 type="text"
