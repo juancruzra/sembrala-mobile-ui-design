@@ -12,7 +12,9 @@ const InviteUser = () => {
   const [copying, setCopying] = useState(false);
 
   const inviteCode = user?.id || '';
-  const inviteText = `Hola, te mando un código de invitación para que pruebes Sembrala sin cargo: ${inviteCode}`;
+  const inviteText = `Hola, te mando un código de invitación para que pruebes Sembrala sin cargo: 
+  ${inviteCode}
+  https://sembrala-mobile-ui-design.vercel.app/`;
 
   const copyToClipboard = async () => {
     setCopying(true);
