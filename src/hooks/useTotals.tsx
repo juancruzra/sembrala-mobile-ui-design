@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -49,14 +48,14 @@ export const useTotals = () => {
 
       // Precios por tonelada
       const prices = {
-        soja: 321300,
-        maiz: 203700,
-        trigo: 235300,
-        girasol: 411775,
+        soja: 323500,
+        maiz: 296500,
+        trigo: 285000,
+        girasol: 415000,
       };
 
-      let currentTotal = 0;
-      let projectedTotal = 0;
+      let currentTenencia = 0;
+      let projectedTenencia = 0;
 
       tenenciasData?.forEach((tenencia) => {
         const cantidad = Number(tenencia.cantidad);
@@ -64,13 +63,13 @@ export const useTotals = () => {
         const total = cantidad * precio;
 
         if (tenencia.producto_nombre === 'soja' || tenencia.producto_nombre === 'maiz') {
-          currentTotal += total;
+          currentTenencia += total;
         } else if (tenencia.producto_nombre === 'trigo' || tenencia.producto_nombre === 'girasol') {
-          projectedTotal += total;
+          projectedTenencia += total;
         }
       });
 
-      const totalTenencias = currentTotal + projectedTotal;
+      const currentTotal = currentTenencia + projectedTenencia;
 
       // Sumar todos los vencimientos pendientes
       const upcomingPayments = vencimientosData?.reduce((sum, vencimiento) => {
