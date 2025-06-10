@@ -48,10 +48,10 @@ export const useTotals = () => {
 
       // Precios por tonelada
       const prices = {
-        soja: 323500,
-        maiz: 296500,
-        trigo: 285000,
-        girasol: 415000,
+        soja: 321300,
+        maiz: 203700,
+        trigo: 235300,
+        girasol: 411775,
       };
 
       let currentTenencia = 0;
