@@ -39,6 +39,7 @@ const ExpenseForm = ({ onClose, onSave }: ExpenseFormProps) => {
     'Maquinaria',
     'Crédito',
     'Tarjeta',
+    'Costo total de cultivo',
     'Otros',
   ];
 
