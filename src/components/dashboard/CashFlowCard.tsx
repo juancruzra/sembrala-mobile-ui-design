@@ -6,6 +6,7 @@ import { useTotals } from '@/hooks/useTotals';
 
 const CashFlowCard = () => {
   const { 
+    currentTenencias,
     totalTenencias, 
     upcomingPayments, 
     futureSaldo, 
@@ -37,7 +38,7 @@ const CashFlowCard = () => {
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600">Tenencias Actuales:</span>
             <span className="font-semibold text-sembrala-green">
-              {formatCurrency(totalTenencias)}
+              {formatCurrency(currentTenencias)}
             </span>
           </div>
           <div className="flex justify-between items-center">
