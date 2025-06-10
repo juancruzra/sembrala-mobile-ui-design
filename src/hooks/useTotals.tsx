@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export const useTotals = () => {
@@ -21,11 +22,7 @@ export const useTotals = () => {
     }).format(amount);
   };
 
-  useEffect(() => {
-    loadTotals();
-  }, []);
-
-  const loadTotals = async () => {
+  const loadTotals = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -92,7 +89,50 @@ export const useTotals = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadTotals();
+
+    // Suscribirse a cambios en tiempo real en tenencias
+    const tenenciasChannel = supabase
+      .channel('tenencias-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tenencias'
+        },
+        () => {
+          console.log('Tenencias changed, reloading totals...');
+          loadTotals();
+        }
+      )
+      .subscribe();
+
+    // Suscribirse a cambios en tiempo real en vencimientos
+    const vencimientosChannel = supabase
+      .channel('vencimientos-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'vencimientos'
+        },
+        () => {
+          console.log('Vencimientos changed, reloading totals...');
+          loadTotals();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(tenenciasChannel);
+      supabase.removeChannel(vencimientosChannel);
+    };
+  }, [loadTotals]);
 
   return {
     ...totals,

@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import Header from './Header';
 import WalletCard from './WalletCard';
 import InventoryCard from './InventoryCard';
+import CompactInventoryCard from './CompactInventoryCard';
 import UpcomingPaymentsCard from './UpcomingPaymentsCard';
 import CashFlowCard from './CashFlowCard';
 import BottomNavigation from './BottomNavigation';
@@ -27,18 +27,13 @@ const Dashboard = () => {
         return (
           <div className="pb-20">
             <WalletCard />
-            <InventoryCard />
+            <CompactInventoryCard />
             <UpcomingPaymentsCard key={refreshKey} />
             <CashFlowCard key={refreshKey}/>
           </div>
         );
       case 'expenses':
-        return (
-          <div className="pb-20 p-4 text-center">
-            <h2 className="text-xl font-bold text-sembrala-blue mb-4">Gastos</h2>
-            <p className="text-gray-600">Sección de gastos en desarrollo...</p>
-          </div>
-        );
+        return <ExpensesSection />;
      case 'credits':
   const whatsappNumber = '5493794937462'; // Reemplaza esto con el número de teléfono de tu asesor
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=Hola%2C%20me%20gustar%C3%ADa%20asesorarme%20sobre%20cr%C3%A9ditos.`;
