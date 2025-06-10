@@ -13,7 +13,11 @@ interface Vencimiento {
   estado: string;
 }
 
-const UpcomingPaymentsCard = () => {
+interface UpcomingPaymentsCardProps {
+  onAddExpense?: () => void;
+}
+
+const UpcomingPaymentsCard = ({ onAddExpense }: UpcomingPaymentsCardProps) => {
   const [payments, setPayments] = useState<Vencimiento[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -128,16 +132,14 @@ const UpcomingPaymentsCard = () => {
           })
         )}
         
-        {payments.length > 0 && (
-          <div className="pt-3 border-t border-gray-200">
-            <button 
-              onClick={loadVencimientos}
-              className="text-sembrala-green hover:underline text-sm font-medium"
-            >
-              {payments.length > 4 ? 'Ver todos los vencimientos' : 'Actualizar lista'}
-            </button>
-          </div>
-        )}
+        <div className="pt-3 border-t border-gray-200">
+          <button 
+            onClick={onAddExpense}
+            className="text-sembrala-green hover:underline text-sm font-medium"
+          >
+            Agregar Nuevo
+          </button>
+        </div>
       </CardContent>
     </Card>
   );

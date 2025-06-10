@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Header from './Header';
 import WalletCard from './WalletCard';
@@ -22,6 +23,10 @@ const Dashboard = () => {
     setRefreshKey(prev => prev + 1);
   };
 
+  const handleAddExpense = () => {
+    setShowExpenseForm(true);
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -29,12 +34,12 @@ const Dashboard = () => {
           <div className="pb-20">
             <WalletCard />
             <CompactInventoryCard />
-            <UpcomingPaymentsCard key={refreshKey} />
+            <UpcomingPaymentsCard key={refreshKey} onAddExpense={handleAddExpense} />
             <CashFlowCard key={refreshKey}/>
           </div>
         );
       case 'expenses':
-        return <ExpensesSection />;
+        return <ExpensesSection onAddExpense={handleAddExpense} />;
      case 'credits':
   const whatsappNumber = '5493794937462'; // Reemplaza esto con el número de teléfono de tu asesor
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=Hola%2C%20me%20gustar%C3%ADa%20asesorarme%20sobre%20cr%C3%A9ditos.`;
@@ -65,7 +70,7 @@ const Dashboard = () => {
       {renderContent()}
       <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
       {activeTab === 'dashboard' && (
-        <FloatingActionButton onClick={() => setShowExpenseForm(true)} />
+        <FloatingActionButton onClick={handleAddExpense} />
       )}
       
       {showExpenseForm && (

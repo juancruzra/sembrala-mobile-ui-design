@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { LogOut, User } from 'lucide-react';
+import InviteUser from '../profile/InviteUser';
 
 const ProfileSection = () => {
   const { user } = useAuth();
@@ -79,6 +80,8 @@ const ProfileSection = () => {
           </div>
         </CardContent>
       </Card>
+
+      <InviteUser />
 
       <Card>
         <CardHeader>

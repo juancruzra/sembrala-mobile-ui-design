@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { Trash } from 'lucide-react';
 
 interface Expense {
   id: string;
@@ -15,9 +17,14 @@ interface Expense {
   created_at: string;
 }
 
-const ExpensesTable = () => {
+interface ExpensesTableProps {
+  onAddExpense?: () => void;
+}
+
+const ExpensesTable = ({ onAddExpense }: ExpensesTableProps) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const { toast } = useToast();
 
   const formatCurrency = (amount: number) => {
@@ -87,6 +94,40 @@ const ExpensesTable = () => {
     }
   };
 
+  const deleteExpense = async (expenseId: string) => {
+    setDeleting(expenseId);
+    try {
+      const { error } = await supabase
+        .from('vencimientos')
+        .delete()
+        .eq('id', expenseId);
+
+      if (error) {
+        console.error('Error deleting expense:', error);
+        toast({
+          title: "Error",
+          description: "No se pudo eliminar el gasto",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Éxito",
+        description: "Gasto eliminado correctamente",
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Ocurrió un error inesperado",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(null);
+    }
+  };
+
   if (loading) {
     return (
       <Card className="mx-4 mb-6">
@@ -99,10 +140,18 @@ const ExpensesTable = () => {
 
   return (
     <Card className="mx-4 mb-6">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg text-sembrala-blue">
           Gastos Registrados
         </CardTitle>
+        {onAddExpense && (
+          <Button
+            onClick={onAddExpense}
+            className="bg-sembrala-green hover:bg-sembrala-green/90 text-sm"
+          >
+            Agregar Nuevo
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         {expenses.length === 0 ? (
@@ -119,6 +168,7 @@ const ExpensesTable = () => {
                   <TableHead>Monto</TableHead>
                   <TableHead>Vencimiento</TableHead>
                   <TableHead>Estado</TableHead>
+                  <TableHead>Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -136,6 +186,17 @@ const ExpensesTable = () => {
                       }`}>
                         {expense.estado}
                       </span>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteExpense(expense.id)}
+                        disabled={deleting === expense.id}
+                        className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

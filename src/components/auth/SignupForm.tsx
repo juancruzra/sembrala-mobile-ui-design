@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -5,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface SignupFormProps {
-  onSignup: (email: string, password: string) => void;
+  onSignup: (email: string, password: string, inviteCode?: string) => void;
   onSwitchToLogin: () => void;
 }
 
@@ -13,6 +14,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,7 +31,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
     }
 
     setIsLoading(true);
-    await onSignup(email, password);
+    await onSignup(email, password, inviteCode);
     setIsLoading(false);
   };
 
@@ -37,7 +39,6 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
     <div className="mobile-container flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
-          {/* Corregir la etiqueta </div> */}
           <div className="mx-auto">
             <img src="logo.png" alt="Logo Sembrala" className="h-20 w-auto" />
           </div>
@@ -91,6 +92,18 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
                 disabled={isLoading}
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="inviteCode">Código de Invitación (opcional)</Label>
+              <Input
+                id="inviteCode"
+                type="text"
+                placeholder="Ingresa tu código de invitación"
+                value={inviteCode}
+                onChange={(e) => setInviteCode(e.target.value)}
+                className="h-12 text-base"
+                disabled={isLoading}
+              />
+            </div>
             <Button 
               type="submit" 
               className="w-full h-12 bg-sembrala-green hover:bg-sembrala-green/90 text-base font-semibold"
@@ -99,7 +112,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
               {isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
             </Button>
           </form>
-          <div class="mt-6 text-center">
+          <div className="mt-6 text-center">
             <button
               type="button"
               onClick={onSwitchToLogin}

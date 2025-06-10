@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import LoginForm from '@/components/auth/LoginForm';
 import SignupForm from '@/components/auth/SignupForm';
@@ -44,16 +45,14 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
     }
   };
 
-  const handleSignup = async (email: string, password: string) => {
+  const handleSignup = async (email: string, password: string, inviteCode?: string) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
         options: {
           data: {
-            // Aquí puedes agregar cualquier dato adicional que necesites
-            // Por ejemplo, si deseas guardar el email en un campo personalizado:
-            // email: email,
+            invite_code: inviteCode || null,
           }
         }
       });
