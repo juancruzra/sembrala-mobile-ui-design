@@ -49,10 +49,10 @@ export const useTotals = () => {
 
       // Precios por tonelada
       const prices = {
-        soja: 323500,
-        maiz: 296500,
-        trigo: 285000,
-        girasol: 415000,
+        soja: 321300,
+        maiz: 203700,
+        trigo: 235300,
+        girasol: 411775,
       };
 
       let currentTotal = 0;
@@ -78,12 +78,12 @@ export const useTotals = () => {
       }, 0) || 0;
 
       const futureSaldo = currentTenencia - upcomingPayments;
-      const projectedFutureSaldo = currentTenencia + projectedTotal - upcomingPayments;
+      const projectedFutureSaldo = currentTotal - upcomingPayments;
 
       setTotals({
-        currentTenencias: currentTotal,
-        projectedTenencias: projectedTotal,
-        totalTenencias,
+        currentTenencias: currentTenencia,
+        projectedTenencias: projectedTenencia,
+        totalTenencias: currentTotal,
         upcomingPayments,
         futureSaldo,
         projectedFutureSaldo,
