@@ -83,9 +83,9 @@ export const useTotals = () => {
         currentTenencias: currentTenencia,
         projectedTenencias: projectedTenencia,
         totalTenencias: currentTotal,
-        upcomingPayments,
-        futureSaldo,
-        projectedFutureSaldo,
+        upcomingPayments: upcomingPayments,
+        futureSaldo: futureSaldo,
+        projectedFutureSaldo: projectedFutureSaldo,
       });
     } catch (error) {
       console.error('Error loading totals:', error);
