@@ -35,7 +35,7 @@ const CashFlowCard = () => {
         {/* Resumen de cálculo */}
         <div className="bg-gray-50 p-4 rounded-lg space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">Tenencias Totales:</span>
+            <span className="text-sm text-gray-600">Tenencias Actuales:</span>
             <span className="font-semibold text-sembrala-green">
               {formatCurrency(totalTenencias)}
             </span>
