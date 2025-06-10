@@ -9,6 +9,7 @@ import BottomNavigation from './BottomNavigation';
 import FloatingActionButton from './FloatingActionButton';
 import ExpenseForm from '../forms/ExpenseForm';
 import ProfileSection from './ProfileSection';
+import ExpensesSection from './ExpensesSection';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
