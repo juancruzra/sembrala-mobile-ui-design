@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTotals } from '@/hooks/useTotals';
+import { useClickTracking } from '@/hooks/useClickTracking';
 
 const CashFlowCard = () => {
   const { 
@@ -14,6 +15,13 @@ const CashFlowCard = () => {
     loading, 
     formatCurrency 
   } = useTotals();
+
+  const { trackClick } = useClickTracking();
+
+  const handlePlanSales = () => {
+    trackClick('ventas');
+    // Aquí se puede agregar la funcionalidad de planificación de ventas en el futuro
+  };
 
   if (loading) {
     return (
@@ -80,7 +88,10 @@ const CashFlowCard = () => {
         </div>
         
         <div className="pt-2">
-          <Button className="w-full bg-sembrala-green hover:bg-sembrala-green/90">
+          <Button 
+            onClick={handlePlanSales}
+            className="w-full bg-sembrala-green hover:bg-sembrala-green/90"
+          >
             Planificar Ventas
           </Button>
         </div>
