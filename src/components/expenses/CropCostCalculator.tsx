@@ -4,10 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const CropCostCalculator = () => {
   const [selectedCrop, setSelectedCrop] = useState('');
   const [hectares, setHectares] = useState('');
+  const navigate = useNavigate();
 
   const cropCosts = {
     'Soja 25/26': { costUSD: 418, status: 'available' },
@@ -49,6 +52,10 @@ const CropCostCalculator = () => {
         maximumFractionDigits: 0,
       }).format(amount);
     }
+  };
+
+  const handleRequestReport = () => {
+    navigate('/report-request');
   };
 
   return (
@@ -127,6 +134,21 @@ const CropCostCalculator = () => {
           <p className="font-medium mb-1">Aclaración:</p>
           <p>Costo aproximado de: Labores (Siembra, Aplicaciones, Cosecha) + Semilla + Agroquímicos.</p>
           <p className="mt-1"><strong>No incluye:</strong> Alquiler, fertilizante, fertilizaciones, gerenciamiento.</p>
+        </div>
+
+        {/* Nueva sección para solicitar análisis detallado */}
+        <div className="border-t pt-4 mt-6">
+          <div className="bg-sembrala-blue/5 p-4 rounded-lg">
+            <p className="text-sm text-gray-700 mb-3">
+              Solicitá un análisis de costos y resultados proyectados detallado y personalizado.
+            </p>
+            <Button 
+              onClick={handleRequestReport}
+              className="w-full bg-sembrala-blue hover:bg-sembrala-blue/90 text-white"
+            >
+              Solicitar
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
