@@ -10,14 +10,14 @@ const CropCostCalculator = () => {
   const [hectares, setHectares] = useState('');
 
   const cropCosts = {
-    'Soja': { costUSD: 0, status: 'próximamente' },
-    'Maíz': { costUSD: 0, status: 'próximamente' },
-    'Trigo': { costUSD: 265, status: 'available' },
-    'Girasol': { costUSD: 0, status: 'próximamente' },
+    'Soja 25/26': { costUSD: 418, status: 'available' },
+    'Maíz 25/26': { costUSD: 562, status: 'available' },
+    'Trigo 25': { costUSD: 265, status: 'available' },
+    'Girasol 25': { costUSD: 403, status: 'available' },
     'Sorgo': { costUSD: 0, status: 'próximamente' },
   };
 
-  const usdToArsRate = 1185;
+  const usdToArsRate = 1182;
 
   const calculateTotals = () => {
     if (!selectedCrop || !hectares || cropCosts[selectedCrop as keyof typeof cropCosts].status !== 'available') {
