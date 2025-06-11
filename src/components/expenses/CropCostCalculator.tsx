@@ -126,7 +126,7 @@ const CropCostCalculator = () => {
         <div className="bg-gray-50 p-3 rounded text-xs text-gray-600">
           <p className="font-medium mb-1">Aclaración:</p>
           <p>Costo aproximado de: Labores (Siembra, Aplicaciones, Cosecha) + Semilla + Agroquímicos.</p>
-          <p className="mt-1"><strong>No incluye:</strong> Alquiler, fertilizante, fertilizaciones.</p>
+          <p className="mt-1"><strong>No incluye:</strong> Alquiler, fertilizante, fertilizaciones, gerenciamiento.</p>
         </div>
       </CardContent>
     </Card>
