@@ -27,10 +27,6 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleAuthentication = () => {
-    // No necesario hacer nada aquí, onAuthStateChange manejará el estado
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-sembrala-light-gray flex items-center justify-center">
@@ -40,7 +36,7 @@ const Index = () => {
   }
 
   if (!user) {
-    return <Auth onAuthenticated={handleAuthentication} />;
+    return <Auth />;
   }
 
   return (

@@ -3,8 +3,15 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Copy } from 'lucide-react';
+import { useClickTracking } from '@/hooks/useClickTracking';
 
 const WalletCard = () => {
+  const { trackClick } = useClickTracking();
+
+  const handleActivateWallet = () => {
+    trackClick('billetera');
+  };
+
   return (
     <Card className="mx-4 mb-6 bg-gradient-to-br from-gray-50 to-gray-100 border-dashed border-2 border-gray-300">
       <CardHeader>
@@ -47,7 +54,10 @@ const WalletCard = () => {
         </div>
         
         <div className="pt-4 border-t border-gray-200">
-          <Button className="w-full bg-sembrala-green hover:bg-sembrala-green/90 text-white font-semibold">
+          <Button 
+            onClick={handleActivateWallet}
+            className="w-full bg-sembrala-green hover:bg-sembrala-green/90 text-white font-semibold"
+          >
             Activar mi Billetera Gratis
           </Button>
         </div>

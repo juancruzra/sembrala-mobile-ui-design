@@ -9,6 +9,27 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      click_tracking: {
+        Row: {
+          click_counter: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          click_counter: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          click_counter?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       report_requests: {
         Row: {
           cost: number
