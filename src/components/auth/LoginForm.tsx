@@ -28,7 +28,7 @@ const LoginForm = ({ onLogin, onSwitchToSignup }: LoginFormProps) => {
           {/* Centrar el logo y ajustar su tamaño */}
           <img src="logo.png" alt="Logo Sembrala" className="mx-auto h-20 w-auto" />
           <CardTitle className="text-2xl font-bold text-sembrala-blue">
-            Pasá, es un gusto recibirte.
+            Pasá, es un gusto recibirte 🧉
           </CardTitle>
           <p className="text-muted-foreground">
             Cuidamos las finanzas de quienes trabajan la tierra.
