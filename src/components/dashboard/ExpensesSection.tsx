@@ -2,7 +2,6 @@
 import React from 'react';
 import ExpensesTable from '../expenses/ExpensesTable';
 import CropCostCalculator from '../expenses/CropCostCalculator';
-import SalesPlanning from '../sales/SalesPlanning';
 
 interface ExpensesSectionProps {
   onAddExpense?: () => void;
@@ -16,7 +15,6 @@ const ExpensesSection = ({ onAddExpense }: ExpensesSectionProps) => {
       </div>
       <ExpensesTable onAddExpense={onAddExpense} />
       <CropCostCalculator />
-      <SalesPlanning />
     </div>
   );
 };
