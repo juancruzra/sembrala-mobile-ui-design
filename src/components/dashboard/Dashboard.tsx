@@ -54,7 +54,7 @@ const Dashboard = () => {
           Whatsapp de tu asesor
         </a>
       </p>
-      <p className="text-gray-600">Horario de Atención 9:00 hs a 13:00 hs</p>
+      <p className="text-gray-600">¿Cómo puedo ayudarte?</p>
     </div>
   );
       case 'profile':
