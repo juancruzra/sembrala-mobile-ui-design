@@ -1,9 +1,10 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SignupFormProps {
   onSignup: (email: string, password: string, inviteCode?: string) => void;
@@ -16,6 +17,26 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [inviteCode, setInviteCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
+
+  const saveInvitationCode = async (userId: string, code: string) => {
+    if (!code) return;
+    
+    try {
+      const { error } = await supabase
+        .from('invitation_codes')
+        .insert({
+          user_id: userId,
+          invitation_code: code
+        });
+      
+      if (error) {
+        console.error('Error saving invitation code:', error);
+      }
+    } catch (error) {
+      console.error('Error saving invitation code:', error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,8 +52,19 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
     }
 
     setIsLoading(true);
-    await onSignup(email, password, inviteCode);
-    setIsLoading(false);
+    
+    try {
+      await onSignup(email, password, inviteCode);
+      
+      // Si el usuario se registra exitosamente y hay un código de invitación, guardarlo
+      if (inviteCode && user?.id) {
+        await saveInvitationCode(user.id, inviteCode);
+      }
+    } catch (error) {
+      console.error('Error during signup:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
