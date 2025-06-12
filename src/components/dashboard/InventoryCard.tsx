@@ -10,20 +10,19 @@ const InventoryCard = () => {
   const [cornTons, setCornTons] = useState(0);
   const [wheatTons, setWheatTons] = useState(0);
   const [sunflowerTons, setSunflowerTons] = useState(0);
-
-  const [soyaPrice, setSoyaPrice] = useState(0);
-  const [cornPrice, setCornPrice] = useState(0);
-  const [wheatPrice, setWheatPrice] = useState(0);
-  const [sunflowerPrice, setSunflowerPrice] = useState(0);
-
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-
+  
+  const soyaPrice = 321300; // Price per ton in ARS
+  const cornPrice = 203700; // Price per ton in ARS
+  const wheatPrice = 235500; // Price per ton in ARS
+  const sunflowerPrice = 411775; // Price per ton in ARS
+  
   const soyaTotal = soyaTons * soyaPrice;
   const cornTotal = cornTons * cornPrice;
   const wheatTotal = wheatTons * wheatPrice;
   const sunflowerTotal = sunflowerTons * sunflowerPrice;
-
+  
   const currentTotal = soyaTotal + cornTotal;
   const projectedTotal = wheatTotal + sunflowerTotal;
   const grandTotal = currentTotal + projectedTotal;
@@ -37,105 +36,86 @@ const InventoryCard = () => {
     }).format(amount);
   };
 
+  // Cargar tenencias del usuario desde Supabase
   useEffect(() => {
-    loadData();
+    loadTenencias();
   }, []);
 
-  const loadData = async () => {
-    setLoading(true);
+  const loadTenencias = async () => {
     try {
-      await Promise.all([loadTenencias(), loadPrecios()]);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('tenencias')
+        .select('producto_nombre, cantidad')
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error loading tenencias:', error);
+        toast({
+          title: "Error",
+          description: "No se pudieron cargar las tenencias",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Inicializar las cantidades
+      let soja = 0;
+      let maiz = 0;
+      let trigo = 0;
+      let girasol = 0;
+
+      data?.forEach((tenencia) => {
+        if (tenencia.producto_nombre === 'soja') {
+          soja = Number(tenencia.cantidad);
+        } else if (tenencia.producto_nombre === 'maiz') {
+          maiz = Number(tenencia.cantidad);
+        } else if (tenencia.producto_nombre === 'trigo') {
+          trigo = Number(tenencia.cantidad);
+        } else if (tenencia.producto_nombre === 'girasol') {
+          girasol = Number(tenencia.cantidad);
+        }
+      });
+
+      setSoyaTons(soja);
+      setCornTons(maiz);
+      setWheatTons(trigo);
+      setSunflowerTons(girasol);
     } catch (error) {
-      console.error('Error cargando datos:', error);
+      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadTenencias = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from('tenencias')
-      .select('producto_nombre, cantidad')
-      .eq('user_id', user.id);
-
-    if (error) {
-      console.error('Error loading tenencias:', error);
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar las tenencias",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    let soja = 0;
-    let maiz = 0;
-    let trigo = 0;
-    let girasol = 0;
-
-    data?.forEach((tenencia) => {
-      if (tenencia.producto_nombre === 'soja') soja = Number(tenencia.cantidad);
-      else if (tenencia.producto_nombre === 'maiz') maiz = Number(tenencia.cantidad);
-      else if (tenencia.producto_nombre === 'trigo') trigo = Number(tenencia.cantidad);
-      else if (tenencia.producto_nombre === 'girasol') girasol = Number(tenencia.cantidad);
-    });
-
-    setSoyaTons(soja);
-    setCornTons(maiz);
-    setWheatTons(trigo);
-    setSunflowerTons(girasol);
-  };
-
-  const loadPrecios = async () => {
-    const { data, error } = await supabase
-      .from('precios')
-      .select('producto_nombre, precio');
-
-    if (error) {
-      console.error('Error loading precios:', error);
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar los precios",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    data?.forEach((p) => {
-      const nombre = p.producto_nombre;
-      const precio = Number(p.precio);
-
-      if (nombre === 'soja') setSoyaPrice(precio);
-      else if (nombre === 'maiz') setCornPrice(precio);
-      else if (nombre === 'trigo') setWheatPrice(precio);
-      else if (nombre === 'girasol') setSunflowerPrice(precio);
-    });
-  };
-
+  // Función para actualizar tenencias en Supabase (UPSERT)
   const updateTenencia = async (producto: string, cantidad: number) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { error } = await supabase
-      .from('tenencias')
-      .upsert({
-        user_id: user.id,
-        producto_nombre: producto,
-        cantidad: cantidad,
-      }, {
-        onConflict: 'user_id,producto_nombre'
-      });
+      const { error } = await supabase
+        .from('tenencias')
+        .upsert({
+          user_id: user.id,
+          producto_nombre: producto,
+          cantidad: cantidad,
+        }, {
+          onConflict: 'user_id,producto_nombre'
+        });
 
-    if (error) {
-      console.error('Error updating tenencia:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo actualizar la tenencia",
-        variant: "destructive",
-      });
+      if (error) {
+        console.error('Error updating tenencia:', error);
+        toast({
+          title: "Error",
+          description: "No se pudo actualizar la tenencia",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
   };
 
@@ -162,15 +142,6 @@ const InventoryCard = () => {
   if (loading) {
     return (
       <Card className="mx-4 mb-6 border-2 border-sembrala-green/20 bg-gradient-to-br from-green-50 to-white">
-        <CardContent className="p-6">
-          <div className="text-center">Cargando tenencias...</div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="mx-4 mb-6 border-2 border-sembrala-green/20 bg-gradient-to-br from-green-50 to-white">
         <CardContent className="p-6">
           <div className="text-center">Cargando tenencias...</div>
         </CardContent>
@@ -358,5 +329,4 @@ const InventoryCard = () => {
   );
 };
 
-export default InventoryCard;
 export default InventoryCard;
