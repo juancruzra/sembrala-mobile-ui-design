@@ -43,16 +43,12 @@ export const useTotals = () => {
         .eq('user_id', user.id)
         .eq('estado', 'Pendiente');
 
-      // Precios actuales (para Girasol y Trigo)
-      const currentPrices = {
-        girasol: 411775,
-        trigo: 235300,
-      };
-
-      // Precios proyectados (para Maíz y Soja)
-      const projectedPrices = {
-        maiz: 203700,
+      // Precios por tonelada
+      const prices = {
         soja: 321300,
+        maiz: 203700,
+        trigo: 235300,
+        girasol: 411775,
       };
 
       let currentTenencia = 0;
@@ -60,13 +56,13 @@ export const useTotals = () => {
 
       tenenciasData?.forEach((tenencia) => {
         const cantidad = Number(tenencia.cantidad);
-        
-        if (tenencia.producto_nombre === 'girasol' || tenencia.producto_nombre === 'trigo') {
-          const precio = currentPrices[tenencia.producto_nombre as keyof typeof currentPrices] || 0;
-          currentTenencia += cantidad * precio;
-        } else if (tenencia.producto_nombre === 'maiz' || tenencia.producto_nombre === 'soja') {
-          const precio = projectedPrices[tenencia.producto_nombre as keyof typeof projectedPrices] || 0;
-          projectedTenencia += cantidad * precio;
+        const precio = prices[tenencia.producto_nombre as keyof typeof prices] || 0;
+        const total = cantidad * precio;
+
+        if (tenencia.producto_nombre === 'soja' || tenencia.producto_nombre === 'maiz') {
+          currentTenencia += total;
+        } else if (tenencia.producto_nombre === 'trigo' || tenencia.producto_nombre === 'girasol') {
+          projectedTenencia += total;
         }
       });
 
@@ -98,12 +94,9 @@ export const useTotals = () => {
   useEffect(() => {
     loadTotals();
 
-    // Create unique channel names with timestamps to avoid conflicts
-    const channelId = Date.now();
-    
     // Suscribirse a cambios en tiempo real en tenencias
     const tenenciasChannel = supabase
-      .channel(`totals-tenencias-${channelId}`)
+      .channel('tenencias-changes')
       .on(
         'postgres_changes',
         {
@@ -120,7 +113,7 @@ export const useTotals = () => {
 
     // Suscribirse a cambios en tiempo real en vencimientos
     const vencimientosChannel = supabase
-      .channel(`totals-vencimientos-${channelId}`)
+      .channel('vencimientos-changes')
       .on(
         'postgres_changes',
         {
