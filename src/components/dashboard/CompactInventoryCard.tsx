@@ -16,29 +16,34 @@ const CompactInventoryCard = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-  const prices = {
-    soja: 321300,
-    maiz: 203700,
-    trigo: 235500,
-    girasol: 411775,
+  // Precios Actuales (para tenencias actuales)
+  const currentPrices = {
+    girasol: 100000,
+    trigo: 100000,
+  };
+
+  // Precios Proyectados (para tenencias proyectadas)
+  const projectedPrices = {
+    maiz: 100000,
+    soja: 100000,
   };
 
   const cropLabels = {
-    soja: 'Soja (Cosechada)',
-    maiz: 'Maíz (Cosechado)',
-    trigo: 'Trigo (Proyectado)',
-    girasol: 'Girasol (Proyectado)',
+    girasol: 'Girasol (Actual)',
+    trigo: 'Trigo (Actual)',
+    maiz: 'Maíz (Proyectado)',
+    soja: 'Soja (Proyectada)',
   };
   
-  const currentCrops = ['soja', 'maiz'];
-  const projectedCrops = ['trigo', 'girasol'];
+  const currentCrops = ['girasol', 'trigo'];
+  const projectedCrops = ['maiz', 'soja'];
 
   const currentTotal = currentCrops.reduce((sum, crop) => {
-    return sum + (crops[crop as keyof typeof crops] * prices[crop as keyof typeof prices]);
+    return sum + (crops[crop as keyof typeof crops] * currentPrices[crop as keyof typeof currentPrices]);
   }, 0);
 
   const projectedTotal = projectedCrops.reduce((sum, crop) => {
-    return sum + (crops[crop as keyof typeof crops] * prices[crop as keyof typeof prices]);
+    return sum + (crops[crop as keyof typeof crops] * projectedPrices[crop as keyof typeof projectedPrices]);
   }, 0);
 
   const grandTotal = currentTotal + projectedTotal;
@@ -125,6 +130,13 @@ const CompactInventoryCard = () => {
     updateTenencia(cropName, value);
   };
 
+  const getPriceForCrop = (crop: string) => {
+    if (currentCrops.includes(crop)) {
+      return currentPrices[crop as keyof typeof currentPrices];
+    }
+    return projectedPrices[crop as keyof typeof projectedPrices];
+  };
+
   if (loading) {
     return (
       <Card className="mx-4 mb-6 border-2 border-sembrala-green/20 bg-gradient-to-br from-green-50 to-white">
@@ -165,12 +177,12 @@ const CompactInventoryCard = () => {
                     step="0.1"
                   />
                   <span className="text-xs text-gray-500">
-                    {formatCurrency(prices[crop as keyof typeof prices])}/tn
+                    {formatCurrency(getPriceForCrop(crop))}/tn
                   </span>
                 </div>
                 <div className="text-right">
                   <span className="text-sm font-semibold text-sembrala-green">
-                    {formatCurrency(crops[crop as keyof typeof crops] * prices[crop as keyof typeof prices])}
+                    {formatCurrency(crops[crop as keyof typeof crops] * getPriceForCrop(crop))}
                   </span>
                 </div>
               </div>
@@ -206,12 +218,12 @@ const CompactInventoryCard = () => {
                     step="0.1"
                   />
                   <span className="text-xs text-gray-500">
-                    {formatCurrency(prices[crop as keyof typeof prices])}/tn
+                    {formatCurrency(getPriceForCrop(crop))}/tn
                   </span>
                 </div>
                 <div className="text-right">
                   <span className="text-sm font-semibold text-blue-600">
-                    {formatCurrency(crops[crop as keyof typeof crops] * prices[crop as keyof typeof prices])}
+                    {formatCurrency(crops[crop as keyof typeof crops] * getPriceForCrop(crop))}
                   </span>
                 </div>
               </div>
