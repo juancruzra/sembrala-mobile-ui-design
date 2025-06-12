@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -43,9 +42,12 @@ const ExpensesTable = ({ onAddExpense }: ExpensesTableProps) => {
   useEffect(() => {
     loadExpenses();
 
+    // Create unique channel name to avoid conflicts with other components
+    const channelId = `expenses-table-${Date.now()}`;
+    
     // Suscribirse a cambios en tiempo real
     const channel = supabase
-      .channel('expenses-changes')
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
