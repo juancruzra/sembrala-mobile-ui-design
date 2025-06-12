@@ -5,11 +5,7 @@ import SignupForm from '@/components/auth/SignupForm';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-interface AuthProps {
-  onAuthenticated: () => void;
-}
-
-const Auth = ({ onAuthenticated }: AuthProps) => {
+const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const { toast } = useToast();
 
@@ -34,7 +30,7 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
           title: "¡Bienvenido!",
           description: "Has iniciado sesión correctamente",
         });
-        onAuthenticated();
+        // No need to call onAuthenticated - auth state change will be handled by Index.tsx
       }
     } catch (error) {
       toast({
@@ -71,7 +67,7 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
           title: "¡Cuenta creada!",
           description: "Tu cuenta ha sido creada exitosamente",
         });
-        onAuthenticated();
+        // No need to call onAuthenticated - auth state change will be handled by Index.tsx
       }
     } catch (error) {
       toast({
