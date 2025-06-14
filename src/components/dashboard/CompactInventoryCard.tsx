@@ -8,37 +8,54 @@ import { useToast } from '@/hooks/use-toast';
 
 const CompactInventoryCard = () => {
   const [crops, setCrops] = useState({
-    soja: 0,
-    maiz: 0,
-    trigo: 0,
-    girasol: 0,
+    // Tenencias Actuales
+    soja_actual: 0,
+    maiz_actual: 0,
+    trigo_actual: 0,
+    girasol_actual: 0,
+    // Tenencias Proyectadas
+    soja_proyectada: 0,
+    maiz_proyectada: 0,
+    trigo_proyectada: 0,
+    girasol_proyectada: 0,
   });
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-  const prices = {
-    soja: 321300,
-    maiz: 203700,
-    trigo: 235500,
-    girasol: 411775,
+  // Precios Actuales
+  const currentPrices = {
+    soja: 100000,
+    maiz: 100000,
+    trigo: 100000,
+    girasol: 100000,
+  };
+
+  // Precios Proyectados
+  const projectedPrices = {
+    soja: 100000,
+    maiz: 100000,
+    trigo: 100000,
+    girasol: 100000,
   };
 
   const cropLabels = {
-    soja: 'Soja (Cosechada)',
-    maiz: 'Maíz (Cosechado)',
-    trigo: 'Trigo (Proyectado)',
-    girasol: 'Girasol (Proyectado)',
+    soja: 'Soja',
+    maiz: 'Maíz',
+    trigo: 'Trigo',
+    girasol: 'Girasol',
   };
   
-  const currentCrops = ['soja', 'maiz'];
-  const projectedCrops = ['trigo', 'girasol'];
+  const currentCrops = ['soja', 'maiz', 'trigo', 'girasol'];
+  const projectedCrops = ['soja', 'maiz', 'trigo', 'girasol'];
 
   const currentTotal = currentCrops.reduce((sum, crop) => {
-    return sum + (crops[crop as keyof typeof crops] * prices[crop as keyof typeof prices]);
+    const cropKey = `${crop}_actual` as keyof typeof crops;
+    return sum + (crops[cropKey] * currentPrices[crop as keyof typeof currentPrices]);
   }, 0);
 
   const projectedTotal = projectedCrops.reduce((sum, crop) => {
-    return sum + (crops[crop as keyof typeof crops] * prices[crop as keyof typeof prices]);
+    const cropKey = `${crop}_proyectada` as keyof typeof crops;
+    return sum + (crops[cropKey] * projectedPrices[crop as keyof typeof projectedPrices]);
   }, 0);
 
   const grandTotal = currentTotal + projectedTotal;
@@ -76,7 +93,16 @@ const CompactInventoryCard = () => {
         return;
       }
 
-      const newCrops = { soja: 0, maiz: 0, trigo: 0, girasol: 0 };
+      const newCrops = {
+        soja_actual: 0,
+        maiz_actual: 0,
+        trigo_actual: 0,
+        girasol_actual: 0,
+        soja_proyectada: 0,
+        maiz_proyectada: 0,
+        trigo_proyectada: 0,
+        girasol_proyectada: 0,
+      };
 
       data?.forEach((tenencia) => {
         if (tenencia.producto_nombre in newCrops) {
@@ -120,9 +146,9 @@ const CompactInventoryCard = () => {
     }
   };
 
-  const handleCropChange = (cropName: string, value: number) => {
-    setCrops(prev => ({ ...prev, [cropName]: value }));
-    updateTenencia(cropName, value);
+  const handleCropChange = (cropKey: string, value: number) => {
+    setCrops(prev => ({ ...prev, [cropKey]: value }));
+    updateTenencia(cropKey, value);
   };
 
   if (loading) {
@@ -149,32 +175,35 @@ const CompactInventoryCard = () => {
             Tenencias Actuales
           </h3>
           <div className="grid grid-cols-2 gap-3">
-            {currentCrops.map((crop) => (
-              <div key={crop} className="space-y-2">
-                <Label className="text-xs text-gray-600">
-                  {cropLabels[crop as keyof typeof cropLabels]}
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    type="number"
-                    placeholder="Tn"
-                    value={crops[crop as keyof typeof crops] || ''}
-                    onChange={(e) => handleCropChange(crop, Number(e.target.value) || 0)}
-                    className="h-8 text-sm flex-1"
-                    min="0"
-                    step="0.1"
-                  />
-                  <span className="text-xs text-gray-500">
-                    {formatCurrency(prices[crop as keyof typeof prices])}/tn
-                  </span>
+            {currentCrops.map((crop) => {
+              const cropKey = `${crop}_actual` as keyof typeof crops;
+              return (
+                <div key={cropKey} className="space-y-2">
+                  <Label className="text-xs text-gray-600">
+                    {cropLabels[crop as keyof typeof cropLabels]}
+                  </Label>
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      type="number"
+                      placeholder="Tn"
+                      value={crops[cropKey] || ''}
+                      onChange={(e) => handleCropChange(cropKey, Number(e.target.value) || 0)}
+                      className="h-8 text-sm flex-1"
+                      min="0"
+                      step="0.1"
+                    />
+                    <span className="text-xs text-gray-500">
+                      {formatCurrency(currentPrices[crop as keyof typeof currentPrices])}/tn
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-sm font-semibold text-sembrala-green">
+                      {formatCurrency(crops[cropKey] * currentPrices[crop as keyof typeof currentPrices])}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-sm font-semibold text-sembrala-green">
-                    {formatCurrency(crops[crop as keyof typeof crops] * prices[crop as keyof typeof prices])}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="bg-sembrala-green/10 p-3 rounded-lg text-center">
             <p className="text-xs text-gray-700 mb-1">Subtotal Actuales:</p>
@@ -190,32 +219,35 @@ const CompactInventoryCard = () => {
             Tenencias Proyectadas
           </h3>
           <div className="grid grid-cols-2 gap-3">
-            {projectedCrops.map((crop) => (
-              <div key={crop} className="space-y-2">
-                <Label className="text-xs text-gray-600">
-                  {cropLabels[crop as keyof typeof cropLabels]}
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    type="number"
-                    placeholder="Tn"
-                    value={crops[crop as keyof typeof crops] || ''}
-                    onChange={(e) => handleCropChange(crop, Number(e.target.value) || 0)}
-                    className="h-8 text-sm flex-1"
-                    min="0"
-                    step="0.1"
-                  />
-                  <span className="text-xs text-gray-500">
-                    {formatCurrency(prices[crop as keyof typeof prices])}/tn
-                  </span>
+            {projectedCrops.map((crop) => {
+              const cropKey = `${crop}_proyectada` as keyof typeof crops;
+              return (
+                <div key={cropKey} className="space-y-2">
+                  <Label className="text-xs text-gray-600">
+                    {cropLabels[crop as keyof typeof cropLabels]}
+                  </Label>
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      type="number"
+                      placeholder="Tn"
+                      value={crops[cropKey] || ''}
+                      onChange={(e) => handleCropChange(cropKey, Number(e.target.value) || 0)}
+                      className="h-8 text-sm flex-1"
+                      min="0"
+                      step="0.1"
+                    />
+                    <span className="text-xs text-gray-500">
+                      {formatCurrency(projectedPrices[crop as keyof typeof projectedPrices])}/tn
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-sm font-semibold text-blue-600">
+                      {formatCurrency(crops[cropKey] * projectedPrices[crop as keyof typeof projectedPrices])}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-sm font-semibold text-blue-600">
-                    {formatCurrency(crops[crop as keyof typeof crops] * prices[crop as keyof typeof prices])}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="bg-blue-50 p-3 rounded-lg text-center">
             <p className="text-xs text-gray-700 mb-1">Subtotal Proyectadas:</p>
