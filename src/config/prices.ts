@@ -8,10 +8,10 @@ const PRICES_API_URL = 'https://pynandi.app.n8n.cloud/webhook/precioscultivos';
 export const CROP_PRICES = {
   // Precios Actuales (en ARS por tonelada) - Se inicializan como null
   current: {
-    soja: null,
-    maiz: null,
-    trigo: null,
-    girasol: null,
+    soja: null as number | null,
+    maiz: null as number | null,
+    trigo: null as number | null,
+    girasol: null as number | null,
   },
   
   // Precios Proyectados (en ARS por tonelada) - Mantener hardcodeados
@@ -21,10 +21,10 @@ export const CROP_PRICES = {
     trigo: 250000,
     girasol: 430000,
   }
-} as const;
+};
 
 // Función para convertir precio de string a número
-const parsePrice = (priceStr: string): number => {
+const parsePrice = (priceStr: string): number | null => {
   try {
     return parseInt(priceStr.replace(/[$\.,]/g, '').replace(/,/g, ''));
   } catch (e) {
@@ -40,20 +40,20 @@ export async function fetchCurrentPrices(): Promise<void> {
     
     // Actualizar los precios si se encuentran en la respuesta
     if (apiData?.cultivos) {
-      CROP_PRICES.current.soja = apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'soja')?.precio 
-        ? parsePrice(apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'soja')!.precio) 
+      CROP_PRICES.current.soja = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'soja')?.precio 
+        ? parsePrice(apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'soja')!.precio) 
         : null;
         
-      CROP_PRICES.current.maiz = apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'maiz' || c.cultivo.toLowerCase() === 'maíz')?.precio 
-        ? parsePrice(apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'maiz' || c.cultivo.toLowerCase() === 'maíz')!.precio) 
+      CROP_PRICES.current.maiz = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'maiz' || c.cultivo.toLowerCase() === 'maíz')?.precio 
+        ? parsePrice(apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'maiz' || c.cultivo.toLowerCase() === 'maíz')!.precio) 
         : null;
         
-      CROP_PRICES.current.trigo = apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'trigo')?.precio 
-        ? parsePrice(apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'trigo')!.precio) 
+      CROP_PRICES.current.trigo = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'trigo')?.precio 
+        ? parsePrice(apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'trigo')!.precio) 
         : null;
         
-      CROP_PRICES.current.girasol = apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'girasol')?.precio 
-        ? parsePrice(apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'girasol')!.precio) 
+      CROP_PRICES.current.girasol = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'girasol')?.precio 
+        ? parsePrice(apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'girasol')!.precio) 
         : null;
     }
     

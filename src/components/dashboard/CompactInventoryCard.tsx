@@ -1,60 +1,18 @@
-import React, { useState, useEffect } from 'react';
+
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-// Importar funciones actualizadas de prices.ts
-import { getCurrentPrices, fetchCurrentPrices } from '@/config/prices';
+import { useInventoryData } from '@/hooks/useInventoryData';
+import CurrentTenenciasSection from './inventory/CurrentTenenciasSection';
+import ProjectedTenenciasSection from './inventory/ProjectedTenenciasSection';
 
 const CompactInventoryCard = () => {
-  const [crops, setCrops] = useState({
-    // Tenencias Actuales
-    soja_actual: 0,
-    maiz_actual: 0,
-    trigo_actual: 0,
-    girasol_actual: 0,
-    // Tenencias Proyectadas
-    soja_proyectada: 0,
-    maiz_proyectada: 0,
-    trigo_proyectada: 0,
-    girasol_proyectada: 0,
-  });
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-  
-  // Obtener precios reactivos desde la API
-  const [currentPrices, setCurrentPrices] = useState(getCurrentPrices());
-  // Precios Proyectados (mantener hardcodeados)
-  const projectedPrices = {
-    soja: 350000,
-    maiz: 220000,
-    trigo: 250000,
-    girasol: 430000,
-  };
-
-  const cropLabels = {
-    soja: 'Soja',
-    maiz: 'Maíz',
-    trigo: 'Trigo',
-    girasol: 'Girasol',
-  };
-  
-  const currentCrops = ['soja', 'maiz', 'trigo', 'girasol'];
-  const projectedCrops = ['soja', 'maiz', 'trigo', 'girasol'];
-
-  // Calcular totales usando los precios actualizados
-  const currentTotal = currentCrops.reduce((sum, crop) => {
-    const cropKey = `${crop}_actual` as keyof typeof crops;
-    return sum + (crops[cropKey] * currentPrices[crop as keyof typeof currentPrices]);
-  }, 0);
-
-  const projectedTotal = projectedCrops.reduce((sum, crop) => {
-    const cropKey = `${crop}_proyectada` as keyof typeof crops;
-    return sum + (crops[cropKey] * projectedPrices[crop as keyof typeof projectedPrices]);
-  }, 0);
-
-  const grandTotal = currentTotal + projectedTotal;
+  const {
+    crops,
+    currentPrices,
+    projectedPrices,
+    loading,
+    handleCropChange,
+  } = useInventoryData();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-AR', {
@@ -65,94 +23,21 @@ const CompactInventoryCard = () => {
     }).format(amount);
   };
 
-  // Cargar precios y tenencias al montar
-  useEffect(() => {
-    const loadPrices = async () => {
-      await fetchCurrentPrices();
-      setCurrentPrices(getCurrentPrices());
-    };
-    
-    loadPrices();
-    loadTenencias();
-  }, []);
+  const currentCrops = ['soja', 'maiz', 'trigo', 'girasol'];
+  const projectedCrops = ['soja', 'maiz', 'trigo', 'girasol'];
 
-  const loadTenencias = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+  const currentTotal = currentCrops.reduce((sum, crop) => {
+    const cropKey = `${crop}_actual` as keyof typeof crops;
+    const price = currentPrices[crop as keyof typeof currentPrices] || 0;
+    return sum + (crops[cropKey] * price);
+  }, 0);
 
-      const { data, error } = await supabase
-        .from('tenencias')
-        .select('producto_nombre, cantidad')
-        .eq('user_id', user.id);
+  const projectedTotal = projectedCrops.reduce((sum, crop) => {
+    const cropKey = `${crop}_proyectada` as keyof typeof crops;
+    return sum + (crops[cropKey] * projectedPrices[crop as keyof typeof projectedPrices]);
+  }, 0);
 
-      if (error) {
-        console.error('Error loading tenencias:', error);
-        toast({
-          title: "Error",
-          description: "No se pudieron cargar las tenencias",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const newCrops = {
-        soja_actual: 0,
-        maiz_actual: 0,
-        trigo_actual: 0,
-        girasol_actual: 0,
-        soja_proyectada: 0,
-        maiz_proyectada: 0,
-        trigo_proyectada: 0,
-        girasol_proyectada: 0,
-      };
-
-      data?.forEach((tenencia) => {
-        if (tenencia.producto_nombre in newCrops) {
-          newCrops[tenencia.producto_nombre as keyof typeof newCrops] = Number(tenencia.cantidad);
-        }
-      });
-
-      setCrops(newCrops);
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateTenencia = async (producto: string, cantidad: number) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { error } = await supabase
-        .from('tenencias')
-        .upsert({
-          user_id: user.id,
-          producto_nombre: producto,
-          cantidad: cantidad,
-        }, {
-          onConflict: 'user_id,producto_nombre'
-        });
-
-      if (error) {
-        console.error('Error updating tenencia:', error);
-        toast({
-          title: "Error",
-          description: "No se pudo actualizar la tenencia",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  const handleCropChange = (cropKey: string, value: number) => {
-    setCrops(prev => ({ ...prev, [cropKey]: value }));
-    updateTenencia(cropKey, value);
-  };
+  const grandTotal = currentTotal + projectedTotal;
 
   if (loading) {
     return (
@@ -172,95 +57,19 @@ const CompactInventoryCard = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Tenencias Actuales */}
-        <div className="space-y-3">
-          <h3 className="font-bold text-sembrala-blue text-sm border-b border-gray-200 pb-1">
-            Tenencias Actuales
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            {currentCrops.map((crop) => {
-              const cropKey = `${crop}_actual` as keyof typeof crops;
-              const price = currentPrices[crop as keyof typeof currentPrices];
-              return (
-                <div key={cropKey} className="space-y-2">
-                  <Label className="text-xs text-gray-600">
-                    {cropLabels[crop as keyof typeof cropLabels]}
-                  </Label>
-                  <div className="flex items-center space-x-2">
-                    <Input
-                      type="number"
-                      placeholder="Tn"
-                      value={crops[cropKey] || ''}
-                      onChange={(e) => handleCropChange(cropKey, Number(e.target.value) || 0)}
-                      className="h-8 text-sm flex-1"
-                      min="0"
-                      step="0.1"
-                    />
-                    <span className="text-xs text-gray-500">
-                      {formatCurrency(price)}/tn
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-sm font-semibold text-sembrala-green">
-                      {formatCurrency(crops[cropKey] * price)}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="bg-sembrala-green/10 p-3 rounded-lg text-center">
-            <p className="text-xs text-gray-700 mb-1">Subtotal Actuales:</p>
-            <p className="text-lg font-bold text-sembrala-blue">
-              {formatCurrency(currentTotal)}
-            </p>
-          </div>
-        </div>
+        <CurrentTenenciasSection
+          crops={crops}
+          currentPrices={currentPrices}
+          onCropChange={handleCropChange}
+          formatCurrency={formatCurrency}
+        />
 
-        {/* Tenencias Proyectadas */}
-        <div className="space-y-3">
-          <h3 className="font-bold text-sembrala-blue text-sm border-b border-gray-200 pb-1">
-            Tenencias Proyectadas
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            {projectedCrops.map((crop) => {
-              const cropKey = `${crop}_proyectada` as keyof typeof crops;
-              const price = projectedPrices[crop as keyof typeof projectedPrices];
-              return (
-                <div key={cropKey} className="space-y-2">
-                  <Label className="text-xs text-gray-600">
-                    {cropLabels[crop as keyof typeof cropLabels]}
-                  </Label>
-                  <div className="flex items-center space-x-2">
-                    <Input
-                      type="number"
-                      placeholder="Tn"
-                      value={crops[cropKey] || ''}
-                      onChange={(e) => handleCropChange(cropKey, Number(e.target.value) || 0)}
-                      className="h-8 text-sm flex-1"
-                      min="0"
-                      step="0.1"
-                    />
-                    <span className="text-xs text-gray-500">
-                      {formatCurrency(price)}/tn
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-sm font-semibold text-blue-600">
-                      {formatCurrency(crops[cropKey] * price)}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="bg-blue-50 p-3 rounded-lg text-center">
-            <p className="text-xs text-gray-700 mb-1">Subtotal Proyectadas:</p>
-            <p className="text-lg font-bold text-sembrala-blue">
-              {formatCurrency(projectedTotal)}
-            </p>
-          </div>
-        </div>
+        <ProjectedTenenciasSection
+          crops={crops}
+          projectedPrices={projectedPrices}
+          onCropChange={handleCropChange}
+          formatCurrency={formatCurrency}
+        />
 
         {/* Total General */}
         <div className="bg-sembrala-green/20 p-3 rounded-lg text-center border-t border-gray-200 pt-3">
