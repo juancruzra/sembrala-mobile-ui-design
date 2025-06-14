@@ -23,11 +23,16 @@ export const CROP_PRICES = {
   }
 };
 
-// Función para convertir precio de string a número
+// Función para convertir precio de string a número (formato argentino)
 const parsePrice = (priceStr: string): number | null => {
   try {
-    // Limpiar el string pero mantener los números tal como vienen
-    const cleanedPrice = priceStr.replace(/[$\.,]/g, '');
+    // Remover el símbolo de peso si existe
+    let cleanedPrice = priceStr.replace(/[$]/g, '');
+    
+    // Para formato argentino: "$323.800,00" 
+    // Eliminar los puntos (separadores de miles) y reemplazar coma por punto (decimales)
+    cleanedPrice = cleanedPrice.replace(/\./g, '').replace(',', '.');
+    
     const numericPrice = parseFloat(cleanedPrice);
     
     console.log(`Parsing price: "${priceStr}" -> cleaned: "${cleanedPrice}" -> numeric: ${numericPrice}`);
