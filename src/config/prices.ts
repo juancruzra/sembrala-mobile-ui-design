@@ -3,9 +3,21 @@ import axios from 'axios';
 // URL del webhook de n8n
 const PRICES_API_URL = 'https://pynandi.app.n8n.cloud/webhook/precioscultivos';
 
+// Estructura de respuesta esperada de la API
+interface CropPricesResponse {
+  cultivos: Array<{
+    cultivo: string;
+    precio: string; // Ej: "$323.800,00"
+  }>;
+}
+
 // Función para convertir precio de string a número
 const parsePrice = (priceStr: string): number => {
-  return parseInt(priceStr.replace(/[$\.,]/g, '').replace(/,/g, ''));
+  try {
+    return parseInt(priceStr.replace(/[$\.,]/g, '').replace(/,/g, ''));
+  } catch (e) {
+    return 100000; // Valor por defecto en caso de error de parsing
+  }
 };
 
 // Función para obtener los precios actuales desde la API de n8n
@@ -14,30 +26,46 @@ export async function fetchCurrentPrices(): Promise<typeof CROP_PRICES.current> 
     const response = await axios.get(PRICES_API_URL);
     const apiData = response.data as CropPricesResponse;
     
-    // Inicializar con valores por defecto en caso de que algunos cultivos no se encuentren
-    const defaultPrices = {
-      soja: 321300,
-      maiz: 203700,
-      trigo: 235500,
-      girasol: 411775,
-    };
+    // Valores por defecto en caso de que no se encuentre el cultivo
+    const defaultPrice = 100000;
     
     // Mapear los cultivos a la estructura actual
     return {
       soja: apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'soja')?.precio 
         ? parsePrice(apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'soja')!.precio) 
-        : defaultPrices.soja,
+        : defaultPrice,
       maiz: apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'maiz' || c.cultivo.toLowerCase() === 'maíz')?.precio 
         ? parsePrice(apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'maiz' || c.cultivo.toLowerCase() === 'maíz')!.precio) 
-        : defaultPrices.maiz,
+        : defaultPrice,
       trigo: apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'trigo')?.precio 
         ? parsePrice(apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'trigo')!.precio) 
-        : defaultPrices.trigo,
+        : defaultPrice,
       girasol: apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'girasol')?.precio 
         ? parsePrice(apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'girasol')!.precio) 
-        : defaultPrices.girasol,
+        : defaultPrice,
+    };
+  } catch (error) {
+    console.error('Error al obtener precios de la API, usando valores por defecto:', error);
+    // En caso de error, devolver valores por defecto
+    return {
+      soja: 100000,
+      maiz: 100000,
+      trigo: 100000,
+      girasol: 100000,
     };
   }
+}
+
+// Exportar CROP_PRICES con valores por defecto (se sobreescribirán con la API)
+export const CROP_PRICES = {
+  // Precios Actuales (en ARS por tonelada) - Se inicializan con la API
+  current: {
+    soja: 100000, // Valor por defecto
+    maiz: 100000,
+    trigo: 100000,
+    girasol: 100000,
+  },
+  
   // Precios Proyectados (en ARS por tonelada) - Mantener hardcodeados
   projected: {
     soja: 350000,
