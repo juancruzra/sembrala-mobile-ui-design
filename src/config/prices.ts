@@ -37,28 +37,7 @@ export async function fetchCurrentPrices(): Promise<typeof CROP_PRICES.current> 
         ? parsePrice(apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'girasol')!.precio) 
         : defaultPrices.girasol,
     };
-  } catch (error) {
-    console.error('Error al obtener precios de la API, usando valores por defecto:', error);
-    // En caso de error, devolver valores por defecto
-    return {
-      soja: 321300,
-      maiz: 203700,
-      trigo: 235500,
-      girasol: 411775,
-    };
   }
-}
-
-// Exportar CROP_PRICES con valores por defecto
-export const CROP_PRICES = {
-  // Precios Actuales (en ARS por tonelada) - Se inicializan con valores por defecto
-  current: {
-    soja: 321300,
-    maiz: 203700,
-    trigo: 235500,
-    girasol: 411775,
-  },
-  
   // Precios Proyectados (en ARS por tonelada) - Mantener hardcodeados
   projected: {
     soja: 350000,
