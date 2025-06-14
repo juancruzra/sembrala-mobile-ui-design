@@ -4,6 +4,7 @@ import LoginForm from '@/components/auth/LoginForm';
 import SignupForm from '@/components/auth/SignupForm';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { cleanupAuthState, handleAuthError } from '@/utils/authUtils';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,15 +12,27 @@ const Auth = () => {
 
   const handleLogin = async (email: string, password: string) => {
     try {
+      // Limpiar estado anterior
+      cleanupAuthState();
+      
+      // Intentar cerrar sesión global primero
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continuar aunque falle
+        console.log('Sign out preventivo falló, continuando...');
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
+        email: email.trim(),
         password: password,
       });
 
       if (error) {
+        const friendlyMessage = handleAuthError(error);
         toast({
           title: "Error al iniciar sesión",
-          description: error.message,
+          description: friendlyMessage,
           variant: "destructive",
         });
         return;
@@ -30,11 +43,18 @@ const Auth = () => {
           title: "¡Bienvenido!",
           description: "Has iniciado sesión correctamente",
         });
+        
+        // Forzar recarga completa para limpiar estado
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1000);
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error inesperado en login:', error);
+      const friendlyMessage = handleAuthError(error);
       toast({
-        title: "Error",
-        description: "Ha ocurrido un error inesperado",
+        title: "Error al iniciar sesión",
+        description: friendlyMessage,
         variant: "destructive",
       });
     }
@@ -42,10 +62,16 @@ const Auth = () => {
 
   const handleSignup = async (email: string, password: string, inviteCode?: string) => {
     try {
+      // Limpiar estado anterior
+      cleanupAuthState();
+      
+      const redirectUrl = `${window.location.origin}/`;
+      
       const { data, error } = await supabase.auth.signUp({
-        email: email,
+        email: email.trim(),
         password: password,
         options: {
+          emailRedirectTo: redirectUrl,
           data: {
             invite_code: inviteCode || null,
           }
@@ -53,9 +79,10 @@ const Auth = () => {
       });
 
       if (error) {
+        const friendlyMessage = handleAuthError(error);
         toast({
           title: "Error al registrarse",
-          description: error.message,
+          description: friendlyMessage,
           variant: "destructive",
         });
         return;
@@ -83,13 +110,24 @@ const Auth = () => {
 
         toast({
           title: "¡Cuenta creada!",
-          description: "Tu cuenta ha sido creada exitosamente",
+          description: data.user.email_confirmed_at 
+            ? "Tu cuenta ha sido creada exitosamente" 
+            : "Revisa tu email para confirmar tu cuenta",
         });
+        
+        // Si el email está confirmado, redirigir automáticamente
+        if (data.user.email_confirmed_at) {
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 1000);
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error inesperado en signup:', error);
+      const friendlyMessage = handleAuthError(error);
       toast({
-        title: "Error",
-        description: "Ha ocurrido un error inesperado",
+        title: "Error al registrarse",
+        description: friendlyMessage,
         variant: "destructive",
       });
     }
