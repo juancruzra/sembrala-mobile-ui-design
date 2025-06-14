@@ -26,6 +26,8 @@ export const CROP_PRICES = {
 // Función para convertir precio de string a número (formato argentino)
 const parsePrice = (priceStr: string): number | null => {
   try {
+    console.log('parsePrice received:', priceStr, 'type:', typeof priceStr);
+    
     // Remover el símbolo de peso si existe
     let cleanedPrice = priceStr.replace(/[$]/g, '');
     
@@ -47,37 +49,50 @@ const parsePrice = (priceStr: string): number | null => {
 // Función para obtener los precios actuales desde la API
 export async function fetchCurrentPrices(): Promise<void> {
   try {
+    console.log('🚀 Fetching prices from API:', PRICES_API_URL);
     const response = await axios.get(PRICES_API_URL);
     const apiData = response.data;
     
+    console.log('📊 API Response received:', JSON.stringify(apiData, null, 2));
+    
     // Actualizar los precios si se encuentran en la respuesta
     if (apiData?.cultivos) {
-      CROP_PRICES.current.soja = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'soja')?.precio 
-        ? parsePrice(apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'soja')!.precio) 
-        : null;
-        
-      CROP_PRICES.current.maiz = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'maiz' || c.cultivo.toLowerCase() === 'maíz')?.precio 
-        ? parsePrice(apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'maiz' || c.cultivo.toLowerCase() === 'maíz')!.precio) 
-        : null;
-        
-      CROP_PRICES.current.trigo = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'trigo')?.precio 
-        ? parsePrice(apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'trigo')!.precio) 
-        : null;
-        
-      CROP_PRICES.current.girasol = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'girasol')?.precio 
-        ? parsePrice(apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'girasol')!.precio) 
-        : null;
+      console.log('🌾 Processing cultivos array:', apiData.cultivos);
+      
+      // Buscar cada cultivo y mostrar el proceso
+      const sojaData = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'soja');
+      console.log('🟡 Soja data found:', sojaData);
+      CROP_PRICES.current.soja = sojaData?.precio ? parsePrice(sojaData.precio) : null;
+      console.log('✅ Soja price set to:', CROP_PRICES.current.soja);
+      
+      const maizData = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'maiz' || c.cultivo.toLowerCase() === 'maíz');
+      console.log('🟡 Maiz data found:', maizData);
+      CROP_PRICES.current.maiz = maizData?.precio ? parsePrice(maizData.precio) : null;
+      console.log('✅ Maiz price set to:', CROP_PRICES.current.maiz);
+      
+      const trigoData = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'trigo');
+      console.log('🟡 Trigo data found:', trigoData);
+      CROP_PRICES.current.trigo = trigoData?.precio ? parsePrice(trigoData.precio) : null;
+      console.log('✅ Trigo price set to:', CROP_PRICES.current.trigo);
+      
+      const girasolData = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'girasol');
+      console.log('🟡 Girasol data found:', girasolData);
+      CROP_PRICES.current.girasol = girasolData?.precio ? parsePrice(girasolData.precio) : null;
+      console.log('✅ Girasol price set to:', CROP_PRICES.current.girasol);
+    } else {
+      console.warn('⚠️ No cultivos array found in API response');
     }
     
-    console.log('Precios actuales actualizados desde la API:', CROP_PRICES.current);
+    console.log('💰 Final CROP_PRICES.current:', CROP_PRICES.current);
   } catch (error) {
-    console.error('Error al cargar precios desde la API:', error);
+    console.error('❌ Error al cargar precios desde la API:', error);
     // No modificamos los precios (quedan como null)
   }
 }
 
 // Función para obtener los precios actuales (la que faltaba)
 export const getCurrentPrices = () => {
+  console.log('📋 getCurrentPrices called, returning:', CROP_PRICES.current);
   return CROP_PRICES.current;
 };
 
@@ -88,13 +103,18 @@ fetchCurrentPrices();
 export const getPriceByProductKey = (productKey: string): number | null => {
   if (productKey.endsWith('_actual')) {
     const crop = productKey.replace('_actual', '') as keyof typeof CROP_PRICES.current;
-    return CROP_PRICES.current[crop] || null;
+    const price = CROP_PRICES.current[crop] || null;
+    console.log(`🔍 getPriceByProductKey(${productKey}) -> crop: ${crop}, price: ${price}`);
+    return price;
   }
   
   if (productKey.endsWith('_proyectada')) {
     const crop = productKey.replace('_proyectada', '') as keyof typeof CROP_PRICES.projected;
-    return CROP_PRICES.projected[crop] || null;
+    const price = CROP_PRICES.projected[crop] || null;
+    console.log(`🔍 getPriceByProductKey(${productKey}) -> crop: ${crop}, price: ${price}`);
+    return price;
   }
   
+  console.log(`🔍 getPriceByProductKey(${productKey}) -> no match found`);
   return null;
 };
