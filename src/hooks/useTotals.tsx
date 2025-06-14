@@ -43,12 +43,19 @@ export const useTotals = () => {
         .eq('user_id', user.id)
         .eq('estado', 'Pendiente');
 
-      // Precios por tonelada
-      const prices = {
-        soja: 321300,
-        maiz: 203700,
-        trigo: 235300,
-        girasol: 411775,
+      // Precios actuales y proyectados
+      const currentPrices = {
+        soja_actual: 100000,
+        maiz_actual: 100000,
+        trigo_actual: 100000,
+        girasol_actual: 100000,
+      };
+
+      const projectedPrices = {
+        soja_proyectada: 100000,
+        maiz_proyectada: 100000,
+        trigo_proyectada: 100000,
+        girasol_proyectada: 100000,
       };
 
       let currentTenencia = 0;
@@ -56,30 +63,41 @@ export const useTotals = () => {
 
       tenenciasData?.forEach((tenencia) => {
         const cantidad = Number(tenencia.cantidad);
-        const precio = prices[tenencia.producto_nombre as keyof typeof prices] || 0;
-        const total = cantidad * precio;
-
-        if (tenencia.producto_nombre === 'soja' || tenencia.producto_nombre === 'maiz') {
-          currentTenencia += total;
-        } else if (tenencia.producto_nombre === 'trigo' || tenencia.producto_nombre === 'girasol') {
-          projectedTenencia += total;
+        
+        // Verificar si es una tenencia actual
+        if (tenencia.producto_nombre.endsWith('_actual')) {
+          const cropType = tenencia.producto_nombre.replace('_actual', '');
+          const priceKey = `${cropType}_actual` as keyof typeof currentPrices;
+          const precio = currentPrices[priceKey] || 100000;
+          currentTenencia += cantidad * precio;
+        }
+        
+        // Verificar si es una tenencia proyectada
+        if (tenencia.producto_nombre.endsWith('_proyectada')) {
+          const cropType = tenencia.producto_nombre.replace('_proyectada', '');
+          const priceKey = `${cropType}_proyectada` as keyof typeof projectedPrices;
+          const precio = projectedPrices[priceKey] || 100000;
+          projectedTenencia += cantidad * precio;
         }
       });
 
-      const currentTotal = currentTenencia + projectedTenencia;
+      const totalTenencias = currentTenencia + projectedTenencia;
 
       // Sumar todos los vencimientos pendientes
       const upcomingPayments = vencimientosData?.reduce((sum, vencimiento) => {
         return sum + Number(vencimiento.monto);
       }, 0) || 0;
 
+      // Saldo futuro = tenencias actuales - gastos pendientes
       const futureSaldo = currentTenencia - upcomingPayments;
-      const projectedFutureSaldo = currentTenencia + projectedTenencia - upcomingPayments;
+      
+      // Saldo futuro proyectado = total general - gastos pendientes
+      const projectedFutureSaldo = totalTenencias - upcomingPayments;
 
       setTotals({
         currentTenencias: currentTenencia,
         projectedTenencias: projectedTenencia,
-        totalTenencias: currentTotal,
+        totalTenencias: totalTenencias,
         upcomingPayments: upcomingPayments,
         futureSaldo: futureSaldo,
         projectedFutureSaldo: projectedFutureSaldo,
