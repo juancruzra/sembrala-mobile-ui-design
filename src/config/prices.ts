@@ -39,15 +39,6 @@ async function fetchCurrentPrices(): Promise<typeof CROP_PRICES.current> {
     };
   } catch (error) {
     console.error('Error al obtener precios de la API, usando valores por defecto:', error);
-    // En caso de error, devolver valores por defecto
-    return {
-      soja: 321300,
-      maiz: 203700,
-      trigo: 235500,
-      girasol: 411775,
-    };
-  }
-}
 
 // Exportar CROP_PRICES como un objeto que se inicializa con la API
 export const CROP_PRICES = {
