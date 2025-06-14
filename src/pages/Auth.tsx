@@ -5,11 +5,7 @@ import SignupForm from '@/components/auth/SignupForm';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-interface AuthProps {
-  onAuthenticated: () => void;
-}
-
-const Auth = ({ onAuthenticated }: AuthProps) => {
+const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const { toast } = useToast();
 
@@ -34,7 +30,6 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
           title: "¡Bienvenido!",
           description: "Has iniciado sesión correctamente",
         });
-        onAuthenticated();
       }
     } catch (error) {
       toast({
@@ -67,11 +62,29 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
       }
 
       if (data.user) {
+        // Si el usuario se registró exitosamente y proporcionó un código de invitación
+        if (inviteCode && inviteCode.trim() !== '') {
+          try {
+            const { error: inviteError } = await supabase
+              .from('invitation_codes')
+              .insert({
+                user_id: data.user.id,
+                invitation_code: inviteCode.trim()
+              });
+
+            if (inviteError) {
+              console.error('Error al guardar código de invitación:', inviteError);
+              // No mostramos error al usuario para no interrumpir el flujo de registro
+            }
+          } catch (inviteError) {
+            console.error('Error al procesar código de invitación:', inviteError);
+          }
+        }
+
         toast({
           title: "¡Cuenta creada!",
           description: "Tu cuenta ha sido creada exitosamente",
         });
-        onAuthenticated();
       }
     } catch (error) {
       toast({
