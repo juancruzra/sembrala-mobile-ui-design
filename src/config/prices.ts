@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 
 // URL del webhook de n8n
@@ -56,12 +57,17 @@ export async function fetchCurrentPrices(): Promise<void> {
         : null;
     }
     
-    console.log('Precios actuales actualizados desde la API');
+    console.log('Precios actuales actualizados desde la API:', CROP_PRICES.current);
   } catch (error) {
     console.error('Error al cargar precios desde la API:', error);
     // No modificamos los precios (quedan como null)
   }
 }
+
+// Función para obtener los precios actuales (la que faltaba)
+export const getCurrentPrices = () => {
+  return CROP_PRICES.current;
+};
 
 // Inicializar los precios actuales con la API al cargar
 fetchCurrentPrices();
