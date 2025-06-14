@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { getCurrentPrices, fetchCurrentPrices } from '@/config/prices';
+import { useCurrentPrices } from '@/hooks/useCurrentPrices';
 
 export interface CropInventory {
   soja_actual: number;
@@ -29,7 +28,7 @@ export const useInventoryData = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-  const [currentPrices, setCurrentPrices] = useState(getCurrentPrices());
+  const { currentPrices } = useCurrentPrices();
   
   const projectedPrices = {
     soja: 350000,
@@ -39,12 +38,6 @@ export const useInventoryData = () => {
   };
 
   useEffect(() => {
-    const loadPrices = async () => {
-      await fetchCurrentPrices();
-      setCurrentPrices(getCurrentPrices());
-    };
-    
-    loadPrices();
     loadTenencias();
   }, []);
 

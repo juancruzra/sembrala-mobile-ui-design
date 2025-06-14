@@ -1,7 +1,7 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { CROP_PRICES, getPriceByProductKey, fetchCurrentPrices } from '@/config/prices';
+import { getPriceByProductKey } from '@/config/prices';
+import { useCurrentPrices } from '@/hooks/useCurrentPrices';
 
 export const useTotals = () => {
   const [totals, setTotals] = useState({
@@ -13,6 +13,8 @@ export const useTotals = () => {
     projectedFutureSaldo: 0,
   });
   const [loading, setLoading] = useState(true);
+
+  const { currentPrices, refreshPrices } = useCurrentPrices();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-AR', {
@@ -32,7 +34,7 @@ export const useTotals = () => {
       }
 
       // Asegurar que tenemos los precios más actuales
-      await fetchCurrentPrices();
+      await refreshPrices();
 
       // Cargar tenencias
       const { data: tenenciasData } = await supabase
@@ -102,11 +104,16 @@ export const useTotals = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [refreshPrices]);
 
   useEffect(() => {
     loadTotals();
 
+    // Re-calcular totales cuando cambien los precios actuales
+    loadTotals();
+  }, [currentPrices, loadTotals]);
+
+  useEffect(() => {
     // Intervalo para refrescar cada 30 segundos y capturar cambios de precios
     const priceRefreshInterval = setInterval(() => {
       console.log('Refreshing totals due to potential price updates...');
