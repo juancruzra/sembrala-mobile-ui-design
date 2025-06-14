@@ -26,8 +26,15 @@ export const CROP_PRICES = {
 // Función para convertir precio de string a número
 const parsePrice = (priceStr: string): number | null => {
   try {
-    return parseInt(priceStr.replace(/[$\.,]/g, '').replace(/,/g, ''));
+    // Limpiar el string pero mantener los números tal como vienen
+    const cleanedPrice = priceStr.replace(/[$\.,]/g, '');
+    const numericPrice = parseFloat(cleanedPrice);
+    
+    console.log(`Parsing price: "${priceStr}" -> cleaned: "${cleanedPrice}" -> numeric: ${numericPrice}`);
+    
+    return isNaN(numericPrice) ? null : numericPrice;
   } catch (e) {
+    console.error('Error parsing price:', e);
     return null;
   }
 };
