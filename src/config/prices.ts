@@ -3,24 +3,24 @@ import axios from 'axios';
 // URL del webhook de n8n
 const PRICES_API_URL = 'https://pynandi.app.n8n.cloud/webhook/precioscultivos';
 
-// Estructura de respuesta esperada de la API
-interface CropPricesResponse {
-  cultivos: Array<{
-    cultivo: string;
-    precio: string; // Ej: "$323.800,00"
-  }>;
-}
-
 // Función para convertir precio de string a número
 const parsePrice = (priceStr: string): number => {
   return parseInt(priceStr.replace(/[$\.,]/g, '').replace(/,/g, ''));
 };
 
 // Función para obtener los precios actuales desde la API de n8n
-async function fetchCurrentPrices(): Promise<typeof CROP_PRICES.current> {
+export async function fetchCurrentPrices(): Promise<typeof CROP_PRICES.current> {
   try {
     const response = await axios.get(PRICES_API_URL);
     const apiData = response.data as CropPricesResponse;
+    
+    // Inicializar con valores por defecto en caso de que algunos cultivos no se encuentren
+    const defaultPrices = {
+      soja: 321300,
+      maiz: 203700,
+      trigo: 235500,
+      girasol: 411775,
+    };
     
     // Mapear los cultivos a la estructura actual
     return {
@@ -39,11 +39,25 @@ async function fetchCurrentPrices(): Promise<typeof CROP_PRICES.current> {
     };
   } catch (error) {
     console.error('Error al obtener precios de la API, usando valores por defecto:', error);
+    // En caso de error, devolver valores por defecto
+    return {
+      soja: 321300,
+      maiz: 203700,
+      trigo: 235500,
+      girasol: 411775,
+    };
+  }
+}
 
-// Exportar CROP_PRICES como un objeto que se inicializa con la API
+// Exportar CROP_PRICES con valores por defecto
 export const CROP_PRICES = {
-  // Precios Actuales (en ARS por tonelada) - Se inicializan con la API
-  current: await fetchCurrentPrices(),
+  // Precios Actuales (en ARS por tonelada) - Se inicializan con valores por defecto
+  current: {
+    soja: 321300,
+    maiz: 203700,
+    trigo: 235500,
+    girasol: 411775,
+  },
   
   // Precios Proyectados (en ARS por tonelada) - Mantener hardcodeados
   projected: {
@@ -67,4 +81,12 @@ export const getPriceByProductKey = (productKey: string): number => {
   }
   
   return 100000;
-};
+}
+
+// Inicializar los precios actuales con la API al cargar el módulo
+fetchCurrentPrices().then(prices => {
+  CROP_PRICES.current = prices;
+  console.log('Precios actuales actualizados desde la API');
+}).catch(error => {
+  console.error('Error al cargar precios iniciales:', error);
+});
