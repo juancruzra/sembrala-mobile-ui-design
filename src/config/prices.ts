@@ -22,14 +22,6 @@ async function fetchCurrentPrices(): Promise<typeof CROP_PRICES.current> {
     const response = await axios.get(PRICES_API_URL);
     const apiData = response.data as CropPricesResponse;
     
-    // Inicializar con valores por defecto en caso de que algunos cultivos no se encuentren
-    const defaultPrices = {
-      soja: 321300,
-      maiz: 203700,
-      trigo: 235500,
-      girasol: 411775,
-    };
-    
     // Mapear los cultivos a la estructura actual
     return {
       soja: apiData.cultivos.find(c => c.cultivo.toLowerCase() === 'soja')?.precio 
