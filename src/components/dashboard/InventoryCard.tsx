@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { CROP_PRICES } from '@/config/prices';
 
 const InventoryCard = () => {
   const [soyaTons, setSoyaTons] = useState(0);
@@ -13,10 +15,11 @@ const InventoryCard = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-  const soyaPrice = 321300; // Price per ton in ARS
-  const cornPrice = 203700; // Price per ton in ARS
-  const wheatPrice = 235500; // Price per ton in ARS
-  const sunflowerPrice = 411775; // Price per ton in ARS
+  // Usar precios centralizados
+  const soyaPrice = CROP_PRICES.current.soja;
+  const cornPrice = CROP_PRICES.current.maiz;
+  const wheatPrice = CROP_PRICES.projected.trigo;
+  const sunflowerPrice = CROP_PRICES.projected.girasol;
   
   const soyaTotal = soyaTons * soyaPrice;
   const cornTotal = cornTons * cornPrice;

@@ -1,6 +1,6 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { CROP_PRICES, getPriceByProductKey } from '@/config/prices';
 
 export const useTotals = () => {
   const [totals, setTotals] = useState({
@@ -43,40 +43,20 @@ export const useTotals = () => {
         .eq('user_id', user.id)
         .eq('estado', 'Pendiente');
 
-      // Precios actuales y proyectados
-      const currentPrices = {
-        soja_actual: 100000,
-        maiz_actual: 100000,
-        trigo_actual: 100000,
-        girasol_actual: 100000,
-      };
-
-      const projectedPrices = {
-        soja_proyectada: 100000,
-        maiz_proyectada: 100000,
-        trigo_proyectada: 100000,
-        girasol_proyectada: 100000,
-      };
-
       let currentTenencia = 0;
       let projectedTenencia = 0;
 
       tenenciasData?.forEach((tenencia) => {
         const cantidad = Number(tenencia.cantidad);
+        const precio = getPriceByProductKey(tenencia.producto_nombre);
         
         // Verificar si es una tenencia actual
         if (tenencia.producto_nombre.endsWith('_actual')) {
-          const cropType = tenencia.producto_nombre.replace('_actual', '');
-          const priceKey = `${cropType}_actual` as keyof typeof currentPrices;
-          const precio = currentPrices[priceKey] || 100000;
           currentTenencia += cantidad * precio;
         }
         
         // Verificar si es una tenencia proyectada
         if (tenencia.producto_nombre.endsWith('_proyectada')) {
-          const cropType = tenencia.producto_nombre.replace('_proyectada', '');
-          const priceKey = `${cropType}_proyectada` as keyof typeof projectedPrices;
-          const precio = projectedPrices[priceKey] || 100000;
           projectedTenencia += cantidad * precio;
         }
       });

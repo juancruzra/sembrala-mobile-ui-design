@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { CROP_PRICES } from '@/config/prices';
 
 const CompactInventoryCard = () => {
   const [crops, setCrops] = useState({
@@ -50,12 +50,12 @@ const CompactInventoryCard = () => {
 
   const currentTotal = currentCrops.reduce((sum, crop) => {
     const cropKey = `${crop}_actual` as keyof typeof crops;
-    return sum + (crops[cropKey] * currentPrices[crop as keyof typeof currentPrices]);
+    return sum + (crops[cropKey] * CROP_PRICES.current[crop as keyof typeof CROP_PRICES.current]);
   }, 0);
 
   const projectedTotal = projectedCrops.reduce((sum, crop) => {
     const cropKey = `${crop}_proyectada` as keyof typeof crops;
-    return sum + (crops[cropKey] * projectedPrices[crop as keyof typeof projectedPrices]);
+    return sum + (crops[cropKey] * CROP_PRICES.projected[crop as keyof typeof CROP_PRICES.projected]);
   }, 0);
 
   const grandTotal = currentTotal + projectedTotal;
@@ -177,6 +177,7 @@ const CompactInventoryCard = () => {
           <div className="grid grid-cols-2 gap-3">
             {currentCrops.map((crop) => {
               const cropKey = `${crop}_actual` as keyof typeof crops;
+              const price = CROP_PRICES.current[crop as keyof typeof CROP_PRICES.current];
               return (
                 <div key={cropKey} className="space-y-2">
                   <Label className="text-xs text-gray-600">
@@ -193,12 +194,12 @@ const CompactInventoryCard = () => {
                       step="0.1"
                     />
                     <span className="text-xs text-gray-500">
-                      {formatCurrency(currentPrices[crop as keyof typeof currentPrices])}/tn
+                      {formatCurrency(price)}/tn
                     </span>
                   </div>
                   <div className="text-right">
                     <span className="text-sm font-semibold text-sembrala-green">
-                      {formatCurrency(crops[cropKey] * currentPrices[crop as keyof typeof currentPrices])}
+                      {formatCurrency(crops[cropKey] * price)}
                     </span>
                   </div>
                 </div>
@@ -221,6 +222,7 @@ const CompactInventoryCard = () => {
           <div className="grid grid-cols-2 gap-3">
             {projectedCrops.map((crop) => {
               const cropKey = `${crop}_proyectada` as keyof typeof crops;
+              const price = CROP_PRICES.projected[crop as keyof typeof CROP_PRICES.projected];
               return (
                 <div key={cropKey} className="space-y-2">
                   <Label className="text-xs text-gray-600">
@@ -237,12 +239,12 @@ const CompactInventoryCard = () => {
                       step="0.1"
                     />
                     <span className="text-xs text-gray-500">
-                      {formatCurrency(projectedPrices[crop as keyof typeof projectedPrices])}/tn
+                      {formatCurrency(price)}/tn
                     </span>
                   </div>
                   <div className="text-right">
                     <span className="text-sm font-semibold text-blue-600">
-                      {formatCurrency(crops[cropKey] * projectedPrices[crop as keyof typeof projectedPrices])}
+                      {formatCurrency(crops[cropKey] * price)}
                     </span>
                   </div>
                 </div>
