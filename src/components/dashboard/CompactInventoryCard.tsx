@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { CROP_PRICES } from '@/config/prices';
+// Importar funciones actualizadas de prices.ts
+import { getCurrentPrices, fetchCurrentPrices } from '@/config/prices';
 
 const CompactInventoryCard = () => {
   const [crops, setCrops] = useState({
@@ -22,20 +23,14 @@ const CompactInventoryCard = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-  // Precios Actuales
-  const currentPrices = {
-    soja: 100000,
-    maiz: 100000,
-    trigo: 100000,
-    girasol: 100000,
-  };
-
-  // Precios Proyectados
+  // Obtener precios reactivos desde la API
+  const [currentPrices, setCurrentPrices] = useState(getCurrentPrices());
+  // Precios Proyectados (mantener hardcodeados)
   const projectedPrices = {
-    soja: 100000,
-    maiz: 100000,
-    trigo: 100000,
-    girasol: 100000,
+    soja: 350000,
+    maiz: 220000,
+    trigo: 250000,
+    girasol: 430000,
   };
 
   const cropLabels = {
@@ -48,14 +43,15 @@ const CompactInventoryCard = () => {
   const currentCrops = ['soja', 'maiz', 'trigo', 'girasol'];
   const projectedCrops = ['soja', 'maiz', 'trigo', 'girasol'];
 
+  // Calcular totales usando los precios actualizados
   const currentTotal = currentCrops.reduce((sum, crop) => {
     const cropKey = `${crop}_actual` as keyof typeof crops;
-    return sum + (crops[cropKey] * CROP_PRICES.current[crop as keyof typeof CROP_PRICES.current]);
+    return sum + (crops[cropKey] * currentPrices[crop as keyof typeof currentPrices]);
   }, 0);
 
   const projectedTotal = projectedCrops.reduce((sum, crop) => {
     const cropKey = `${crop}_proyectada` as keyof typeof crops;
-    return sum + (crops[cropKey] * CROP_PRICES.projected[crop as keyof typeof CROP_PRICES.projected]);
+    return sum + (crops[cropKey] * projectedPrices[crop as keyof typeof projectedPrices]);
   }, 0);
 
   const grandTotal = currentTotal + projectedTotal;
@@ -69,7 +65,14 @@ const CompactInventoryCard = () => {
     }).format(amount);
   };
 
+  // Cargar precios y tenencias al montar
   useEffect(() => {
+    const loadPrices = async () => {
+      await fetchCurrentPrices();
+      setCurrentPrices(getCurrentPrices());
+    };
+    
+    loadPrices();
     loadTenencias();
   }, []);
 
@@ -177,7 +180,7 @@ const CompactInventoryCard = () => {
           <div className="grid grid-cols-2 gap-3">
             {currentCrops.map((crop) => {
               const cropKey = `${crop}_actual` as keyof typeof crops;
-              const price = CROP_PRICES.current[crop as keyof typeof CROP_PRICES.current];
+              const price = currentPrices[crop as keyof typeof currentPrices];
               return (
                 <div key={cropKey} className="space-y-2">
                   <Label className="text-xs text-gray-600">
@@ -222,7 +225,7 @@ const CompactInventoryCard = () => {
           <div className="grid grid-cols-2 gap-3">
             {projectedCrops.map((crop) => {
               const cropKey = `${crop}_proyectada` as keyof typeof crops;
-              const price = CROP_PRICES.projected[crop as keyof typeof CROP_PRICES.projected];
+              const price = projectedPrices[crop as keyof typeof projectedPrices];
               return (
                 <div key={cropKey} className="space-y-2">
                   <Label className="text-xs text-gray-600">
