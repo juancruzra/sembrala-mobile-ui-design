@@ -1,6 +1,7 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { CROP_PRICES, getPriceByProductKey } from '@/config/prices';
+import { CROP_PRICES, getPriceByProductKey, fetchCurrentPrices } from '@/config/prices';
 
 export const useTotals = () => {
   const [totals, setTotals] = useState({
@@ -30,6 +31,9 @@ export const useTotals = () => {
         return;
       }
 
+      // Asegurar que tenemos los precios más actuales
+      await fetchCurrentPrices();
+
       // Cargar tenencias
       const { data: tenenciasData } = await supabase
         .from('tenencias')
@@ -50,14 +54,16 @@ export const useTotals = () => {
         const cantidad = Number(tenencia.cantidad);
         const precio = getPriceByProductKey(tenencia.producto_nombre);
         
-        // Verificar si es una tenencia actual
-        if (tenencia.producto_nombre.endsWith('_actual')) {
-          currentTenencia += cantidad * precio;
-        }
-        
-        // Verificar si es una tenencia proyectada
-        if (tenencia.producto_nombre.endsWith('_proyectada')) {
-          projectedTenencia += cantidad * precio;
+        if (precio !== null) {
+          // Verificar si es una tenencia actual
+          if (tenencia.producto_nombre.endsWith('_actual')) {
+            currentTenencia += cantidad * precio;
+          }
+          
+          // Verificar si es una tenencia proyectada
+          if (tenencia.producto_nombre.endsWith('_proyectada')) {
+            projectedTenencia += cantidad * precio;
+          }
         }
       });
 
@@ -73,6 +79,15 @@ export const useTotals = () => {
       
       // Saldo futuro proyectado = total general - gastos pendientes
       const projectedFutureSaldo = totalTenencias - upcomingPayments;
+
+      console.log('Totals calculated:', {
+        currentTenencia,
+        projectedTenencia,
+        totalTenencias,
+        upcomingPayments,
+        futureSaldo,
+        projectedFutureSaldo
+      });
 
       setTotals({
         currentTenencias: currentTenencia,
@@ -91,6 +106,12 @@ export const useTotals = () => {
 
   useEffect(() => {
     loadTotals();
+
+    // Intervalo para refrescar cada 30 segundos y capturar cambios de precios
+    const priceRefreshInterval = setInterval(() => {
+      console.log('Refreshing totals due to potential price updates...');
+      loadTotals();
+    }, 30000);
 
     // Suscribirse a cambios en tiempo real en tenencias
     const tenenciasChannel = supabase
@@ -127,6 +148,7 @@ export const useTotals = () => {
       .subscribe();
 
     return () => {
+      clearInterval(priceRefreshInterval);
       supabase.removeChannel(tenenciasChannel);
       supabase.removeChannel(vencimientosChannel);
     };
