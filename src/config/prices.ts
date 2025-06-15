@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // URL del webhook de n8n
-const PRICES_API_URL = 'https://pynandi.app.n8n.cloud/webhook/precioscultivos';
+const PRICES_API_URL = 'https://us-central1-sembrala-test2.cloudfunctions.net/getPreciosPizarra';
 
 // Exportar CROP_PRICES con valores nulos para current
 export const CROP_PRICES = {
