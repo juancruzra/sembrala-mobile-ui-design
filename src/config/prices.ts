@@ -57,30 +57,30 @@ export async function fetchCurrentPrices(): Promise<void> {
     
     // Actualizar los precios si se encuentran en la respuesta
     if (apiData?.cultivos) {
-      console.log('🌾 Processing cultivos array:', apiData.cultivos);
+      console.log('🌾 Processing cultivos array:', apiData.precios);
       
       // Buscar cada cultivo y mostrar el proceso
-      const sojaData = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'soja');
+      const sojaData = apiData.precios.find((c: any) => c.producto.toLowerCase() === 'soja');
       console.log('🟡 Soja data found:', sojaData);
       CROP_PRICES.current.soja = sojaData?.precio ? parsePrice(sojaData.precio) : null;
       console.log('✅ Soja price set to:', CROP_PRICES.current.soja);
       
-      const maizData = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'maiz' || c.cultivo.toLowerCase() === 'maíz');
+      const maizData = apiData.precios.find((c: any) => c.producto.toLowerCase() === 'maiz' || c.cultivo.toLowerCase() === 'maíz');
       console.log('🟡 Maiz data found:', maizData);
       CROP_PRICES.current.maiz = maizData?.precio ? parsePrice(maizData.precio) : null;
       console.log('✅ Maiz price set to:', CROP_PRICES.current.maiz);
       
-      const trigoData = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'trigo');
+      const trigoData = apiData.precios.find((c: any) => c.producto.toLowerCase() === 'trigo');
       console.log('🟡 Trigo data found:', trigoData);
       CROP_PRICES.current.trigo = trigoData?.precio ? parsePrice(trigoData.precio) : null;
       console.log('✅ Trigo price set to:', CROP_PRICES.current.trigo);
       
-      const girasolData = apiData.cultivos.find((c: any) => c.cultivo.toLowerCase() === 'girasol');
+      const girasolData = apiData.precios.find((c: any) => c.producto.toLowerCase() === 'girasol');
       console.log('🟡 Girasol data found:', girasolData);
       CROP_PRICES.current.girasol = girasolData?.precio ? parsePrice(girasolData.precio) : null;
       console.log('✅ Girasol price set to:', CROP_PRICES.current.girasol);
     } else {
-      console.warn('⚠️ No cultivos array found in API response');
+      console.warn('⚠️ No precios array found in API response');
     }
     
     console.log('💰 Final CROP_PRICES.current:', CROP_PRICES.current);
