@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -92,6 +91,9 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
                 disabled={isLoading}
               />
             </div>
+
+            {/* Campo de Código de Invitación oculto por ahora */}
+            {/*
             <div className="space-y-2">
               <Label htmlFor="inviteCode">Código de Invitación</Label>
               <Input
@@ -104,6 +106,8 @@ const SignupForm = ({ onSignup, onSwitchToLogin }: SignupFormProps) => {
                 disabled={isLoading}
               />
             </div>
+            */}
+
             <Button 
               type="submit" 
               className="w-full h-12 bg-sembrala-green hover:bg-sembrala-green/90 text-base font-semibold"
